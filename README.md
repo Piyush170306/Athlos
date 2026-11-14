@@ -46,21 +46,23 @@ Official responsive tournament portal and secure administrative dashboard engine
 * npm v9+.
 
 ### Installation
-1. Start the server (already running):
+1. Copy `.env.example` to `.env.local` and set unique values for `ADMIN_SESSION_SECRET`, `INITIAL_ADMIN_PASSWORD`, and `CRON_SECRET`. Configure any optional integrations you plan to use.
+2. Install dependencies:
    ```bash
-   npm run start
+   npm ci
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
    ```
    Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-2. Run the automated test suite (20 tests):
+4. Run the automated test suite:
    ```bash
-   node --test tests/*.test.js
+   npm test
    ```
 
-### Default Local Admin Credentials
-* **Portal URL:** `http://localhost:3000/admin/login`
-* **Email:** `admin@athlos.edu`
-* **Password:** `AdminPassword2026!`
+The database is initialized on first use with the configured `INITIAL_ADMIN_EMAIL` and `INITIAL_ADMIN_PASSWORD`. The local database file is not tracked by Git.
 
 ---
 

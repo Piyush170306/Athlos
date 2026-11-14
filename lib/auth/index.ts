@@ -4,7 +4,13 @@ import jwt from 'jsonwebtoken';
 import { db } from '@/lib/db';
 import { AdminUser } from '@/lib/types';
 
-const SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || 'fallback-secret-for-dev-only-change-in-production';
+function getSessionSecret(): string {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) {
+    throw new Error('ADMIN_SESSION_SECRET must be configured before using admin sessions.');
+  }
+  return secret;
+}
 const ALLOWED_EMAILS = (process.env.ADMIN_ALLOWED_EMAILS || 'admin@athlos.edu,sports@athlos.edu')
   .split(',')
   .map((e) => e.trim().toLowerCase());
@@ -64,12 +70,12 @@ export function createAdminSessionToken(user: AdminUser): string {
     email: user.email,
     role: user.role,
   };
-  return jwt.sign(payload, SESSION_SECRET, { expiresIn: '8h' });
+  return jwt.sign(payload, getSessionSecret(), { expiresIn: '8h' });
 }
 
 export function verifyAdminSessionToken(token: string): { valid: boolean; user?: { userId: string; email: string; role: string } } {
   try {
-    const decoded = jwt.verify(token, SESSION_SECRET) as { userId: string; email: string; role: string };
+    const decoded = jwt.verify(token, getSessionSecret()) as { userId: string; email: string; role: string };
     return { valid: true, user: decoded };
   } catch (err) {
     return { valid: false };

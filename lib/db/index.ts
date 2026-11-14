@@ -50,7 +50,11 @@ if (!fs.existsSync(DATA_DIR)) {
 
 function getInitialData(): DatabaseSchema {
   const now = new Date().toISOString();
-  const passwordHash = bcrypt.hashSync(process.env.INITIAL_ADMIN_PASSWORD || 'AdminPassword2026!', 10);
+  const initialAdminPassword = process.env.INITIAL_ADMIN_PASSWORD;
+  if (!initialAdminPassword) {
+    throw new Error('INITIAL_ADMIN_PASSWORD must be configured before initializing the database.');
+  }
+  const passwordHash = bcrypt.hashSync(initialAdminPassword, 10);
 
   // 1. Initial Seasons
   const s2026: Season = {

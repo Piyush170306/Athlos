@@ -1,0 +1,24 @@
+{
+  "seasons": [
+    { "id": "season-2026-27", "slug": "2026-27", "status": "active" },
+    { "id": "season-2025-26", "slug": "2025-26", "status": "archived" },
+    { "id": "season-2024-25", "slug": "2024-25", "status": "archived" },
+    { "id": "season-2023-24", "slug": "2023-24", "status": "archived" },
+    { "id": "season-2022-23", "slug": "2022-23", "status": "archived" }
+  ],
+  "batches": [],
+  "sports": [],
+  "official_batch_scores": [
+    { "seasonId": "season-2026-27", "totalPoints": 30, "sourceRow": 89 },
+    { "seasonId": "season-2026-27", "totalPoints": 14, "sourceRow": 89 },
+    { "seasonId": "season-2026-27", "totalPoints": 10, "sourceRow": 89 }
+  ],
+  "audit_logs": [
+    {
+      "actor": "system",
+      "action": "SYSTEM_INITIALIZED",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "entityType": "SYSTEM"
+    }
+  ]
+}

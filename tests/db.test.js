@@ -4,17 +4,8 @@ const fs = require('fs');
 const path = require('path');
 
 test('Database: schema initialization and data integrity', () => {
-  const dataDir = path.join(process.cwd(), 'data');
-  const dbFile = path.join(dataDir, 'athlos_wob.json');
-
-  // Trigger db load by importing compiled or running inline check
-  if (!fs.existsSync(dbFile)) {
-    // If not written yet, ensure structure
-    assert.ok(true, 'DB file will be created on first app boot');
-    return;
-  }
-
-  const raw = fs.readFileSync(dbFile, 'utf-8');
+  const fixtureFile = path.join(__dirname, 'fixtures', 'athlos_wob.json');
+  const raw = fs.readFileSync(fixtureFile, 'utf-8');
   const data = JSON.parse(raw);
 
   assert.ok(Array.isArray(data.seasons), 'Seasons should be an array');

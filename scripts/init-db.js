@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+require('@next/env').loadEnvConfig(process.cwd());
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DATA_DIR, 'athlos_wob.json');
@@ -11,7 +12,11 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 
 const now = new Date().toISOString();
-const passwordHash = bcrypt.hashSync('AdminPassword2026!', 10);
+const initialAdminPassword = process.env.INITIAL_ADMIN_PASSWORD;
+if (!initialAdminPassword) {
+  throw new Error('Set INITIAL_ADMIN_PASSWORD in .env.local before initializing the database.');
+}
+const passwordHash = bcrypt.hashSync(initialAdminPassword, 10);
 
 const s2026 = {
   id: 'season-2026-27',

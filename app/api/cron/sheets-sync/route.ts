@@ -7,7 +7,10 @@ export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
   const secretParam = req.nextUrl.searchParams.get('secret');
 
-  const configuredSecret = process.env.CRON_SECRET || 'athlos-cron-sync-secret-2026';
+  const configuredSecret = process.env.CRON_SECRET;
+  if (!configuredSecret) {
+    return NextResponse.json({ error: 'Cron authentication is not configured' }, { status: 503 });
+  }
 
   const isAuthorized =
     authHeader === `Bearer ${configuredSecret}` || secretParam === configuredSecret;

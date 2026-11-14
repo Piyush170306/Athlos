@@ -4,10 +4,8 @@ const fs = require('fs');
 const path = require('path');
 
 test('Admin Management: Single active season enforcement and explicit activation confirmation', () => {
-  const dbFile = path.join(process.cwd(), 'data', 'athlos_wob.json');
-  assert.ok(fs.existsSync(dbFile), 'DB file must exist');
-
-  const raw = fs.readFileSync(dbFile, 'utf-8');
+  const fixtureFile = path.join(__dirname, 'fixtures', 'athlos_wob.json');
+  const raw = fs.readFileSync(fixtureFile, 'utf-8');
   const db = JSON.parse(raw);
 
   // Verify only 1 active season currently exists
@@ -21,8 +19,8 @@ test('Admin Management: Single active season enforcement and explicit activation
 });
 
 test('Admin Management: Immutable audit log records administrative events with actor and timestamp', () => {
-  const dbFile = path.join(process.cwd(), 'data', 'athlos_wob.json');
-  const raw = fs.readFileSync(dbFile, 'utf-8');
+  const fixtureFile = path.join(__dirname, 'fixtures', 'athlos_wob.json');
+  const raw = fs.readFileSync(fixtureFile, 'utf-8');
   const db = JSON.parse(raw);
 
   assert.ok(Array.isArray(db.audit_logs), 'Audit logs array must exist');
