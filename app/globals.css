@@ -1,90 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=League+Spartan:wght@400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,400;1,600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #080c14;
-  --foreground: #f1f5f9;
+  --background: #080808;
+  --foreground: #f5ebd4;
+  --matte-black: #080808;
+  --black-bronze: #17140e;
+  --dark-gold: #302719;
+  --champagne-gold: #c6a45a;
+  --metallic-gold: #e6ca83;
+  --warm-ivory: #f5ebd4;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #17140e 0%, #080808 65%);
+  font-family: 'Manrope', 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
-/* Custom esports scrollbars */
+/* Custom luxury scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0b111e;
+  background: #080808;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #243250;
+  background: #302719;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b82f6;
+  background: #c6a45a;
 }
 
-/* Glassmorphism & esports surfaces */
+/* Luxury Matte-Black & Gold Surfaces */
+.luxury-card {
+  background: linear-gradient(145deg, rgba(23, 20, 14, 0.85) 0%, rgba(8, 8, 8, 0.95) 100%);
+  border: 1px solid rgba(198, 164, 90, 0.22);
+  backdrop-filter: blur(14px);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.luxury-card:hover {
+  border-color: rgba(230, 202, 131, 0.55);
+  box-shadow: 0 10px 30px -10px rgba(198, 164, 90, 0.2);
+  transform: translateY(-2px);
+}
+
+.luxury-card-gold {
+  background: linear-gradient(145deg, rgba(48, 39, 25, 0.6) 0%, rgba(15, 13, 9, 0.95) 100%);
+  border: 1px solid rgba(230, 202, 131, 0.45);
+  box-shadow: 0 0 25px rgba(230, 202, 131, 0.12);
+}
+
+.luxury-card-gold:hover {
+  border-color: rgba(230, 202, 131, 0.85);
+  box-shadow: 0 0 35px rgba(230, 202, 131, 0.25);
+}
+
+/* Legacy compatibility classes mapped to luxury palette */
 .esports-card {
-  background: linear-gradient(135deg, rgba(15, 22, 38, 0.85) 0%, rgba(11, 17, 30, 0.95) 100%);
-  border: 1px solid #1f2c47;
-  backdrop-filter: blur(12px);
+  background: linear-gradient(145deg, rgba(23, 20, 14, 0.85) 0%, rgba(8, 8, 8, 0.95) 100%);
+  border: 1px solid #302719;
+  backdrop-filter: blur(14px);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .esports-card:hover {
-  border-color: #3b82f6;
+  border-color: #c6a45a;
 }
 
 .esports-card-gold {
-  background: linear-gradient(135deg, rgba(24, 20, 10, 0.85) 0%, rgba(15, 22, 38, 0.95) 100%);
-  border: 1px solid rgba(234, 179, 8, 0.3);
+  background: linear-gradient(145deg, rgba(48, 39, 25, 0.6) 0%, rgba(15, 13, 9, 0.95) 100%);
+  border: 1px solid rgba(230, 202, 131, 0.4);
 }
 
-.esports-card-gold:hover {
-  border-color: rgba(234, 179, 8, 0.8);
-  box-shadow: 0 0 20px rgba(234, 179, 8, 0.2);
+/* Typography Utility Classes */
+.font-spartan {
+  font-family: 'League Spartan', sans-serif;
 }
 
-.esports-card-green {
-  border-color: rgba(16, 185, 129, 0.3);
+.font-seasons {
+  font-family: 'The Seasons', 'Playfair Display', 'Cinzel', serif;
 }
 
-.esports-card-green:hover {
-  border-color: rgba(16, 185, 129, 0.8);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+.font-manrope {
+  font-family: 'Manrope', 'Inter', sans-serif;
 }
 
-.esports-card-orange {
-  border-color: rgba(249, 115, 22, 0.3);
+/* Metallic Gold Gradient Text */
+.gold-metallic-text {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5EBD4 20%, #E6CA83 60%, #997830 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.esports-card-orange:hover {
-  border-color: rgba(249, 115, 22, 0.8);
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
+.champagne-text {
+  background: linear-gradient(180deg, #FFFDF5 0%, #E6CA83 50%, #C6A45A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Text glow */
-.text-glow-gold {
-  text-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+/* Infinite Marquee */
+@keyframes luxuryMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
-.text-glow-cyan {
-  text-shadow: 0 0 12px rgba(6, 182, 212, 0.5);
+.animate-luxury-marquee {
+  display: flex;
+  width: max-content;
+  animation: luxuryMarquee 40s linear infinite;
 }
 
-.text-glow-green {
-  text-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
-}
-
-.text-glow-orange {
-  text-shadow: 0 0 12px rgba(249, 115, 22, 0.5);
+.animate-luxury-marquee:hover {
+  animation-play-state: paused;
 }
