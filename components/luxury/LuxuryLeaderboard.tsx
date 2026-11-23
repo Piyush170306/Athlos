@@ -119,14 +119,18 @@ export default function LuxuryLeaderboard({
                   )}
                 </div>
 
-                {/* Mascot Artwork & Batch Code ONLY */}
+                {/* Cohort Identity (Strictly Batch Codes & Accent Badges - No Mascots) */}
                 <div className="flex items-center space-x-4 mb-6 pb-6 border-b border-[#302719]/60">
-                  <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-black/80 border border-[#C6A45A]/30 p-1 flex-shrink-0 group-hover:border-[#E6CA83] transition-colors">
-                    <img
-                      src={entry.batch.mascotImagePath}
-                      alt={entry.batch.code}
-                      className="w-full h-full object-cover rounded-xl mix-blend-screen transition-transform duration-500 group-hover:scale-110"
-                    />
+                  <div
+                    className={`relative w-16 h-16 rounded-2xl flex items-center justify-center font-spartan font-black text-xl tracking-wider border shadow-md ${
+                      entry.batch.code === 'IPM07'
+                        ? 'bg-red-950/40 border-red-500/40 text-red-200'
+                        : entry.batch.code === 'IPM06'
+                        ? 'bg-slate-900/60 border-slate-400/40 text-slate-200'
+                        : 'bg-blue-950/40 border-blue-500/40 text-blue-200'
+                    }`}
+                  >
+                    <span>{entry.batch.code.slice(3)}</span>
                   </div>
                   <div>
                     <h3 className="text-3xl sm:text-4xl font-spartan font-black uppercase tracking-wider text-white">

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Flame, Plus, CheckCircle, Tag, Layers } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Flame, Plus, CheckCircle, Tag, Layers, FileText, Upload, Trash2, ExternalLink, AlertCircle } from 'lucide-react';
 import { Sport, Category } from '@/lib/types';
 
 export default function AdminSportsPage() {
@@ -9,6 +9,7 @@ export default function AdminSportsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [uploadingSportId, setUploadingSportId] = useState<string | null>(null);
 
   // New sport form
   const [name, setName] = useState('');
@@ -16,7 +17,10 @@ export default function AdminSportsPage() {
   const [description, setDescription] = useState('');
   const [scoreFormatType, setScoreFormatType] = useState('SCORE');
   const [categoriesInput, setCategoriesInput] = useState('Boys, Girls');
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [activeTargetSportId, setActiveTargetSportId] = useState<string | null>(null);
 
   const loadData = async () => {
     try {
@@ -58,22 +62,97 @@ export default function AdminSportsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMessage(data.error);
+        setMessage({ text: data.error, type: 'error' });
       } else {
         setShowAddModal(false);
         setName('');
         setSlug('');
         setDescription('');
-        setMessage('Sport created successfully!');
+        setMessage({ text: 'Sport discipline created successfully!', type: 'success' });
         loadData();
       }
     } catch (err) {
-      setMessage('Failed to create sport');
+      setMessage({ text: 'Failed to create sport', type: 'error' });
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !activeTargetSportId) return;
+
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      setMessage({ text: 'Validation Error: Only PDF documents are allowed', type: 'error' });
+      return;
+    }
+
+    setUploadingSportId(activeTargetSportId);
+    setMessage(null);
+
+    const formData = new FormData();
+    formData.append('sportId', activeTargetSportId);
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/admin/sports/rulebook', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage({ text: data.error || 'Upload failed', type: 'error' });
+      } else {
+        setMessage({ text: data.message || 'Rulebook published successfully!', type: 'success' });
+        loadData();
+      }
+    } catch (err: any) {
+      setMessage({ text: 'Upload failed due to network error', type: 'error' });
+    } finally {
+      setUploadingSportId(null);
+      setActiveTargetSportId(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleUnpublish = async (sportId: string, sportName: string) => {
+    if (!confirm(`Are you sure you want to unpublish the official rulebook for ${sportName}?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/admin/sports/rulebook?sportId=${sportId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage({ text: data.error || 'Failed to unpublish', type: 'error' });
+      } else {
+        setMessage({ text: `Rulebook for ${sportName} unpublished`, type: 'success' });
+        loadData();
+      }
+    } catch (err) {
+      setMessage({ text: 'Failed to unpublish rulebook', type: 'error' });
+    }
+  };
+
+  const triggerUpload = (sportId: string) => {
+    setActiveTargetSportId(sportId);
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
   return (
     <div className="space-y-8">
+      {/* Hidden File Input for Rulebook Uploads */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+        accept="application/pdf,.pdf"
+        className="hidden"
+      />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-surfaceBorder gap-4">
         <div>
@@ -81,10 +160,10 @@ export default function AdminSportsPage() {
             Tournament Management
           </span>
           <h1 className="text-3xl font-black uppercase text-white tracking-tight">
-            Sports & Result Schemas
+            Sports & Official Rulebooks
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Configure sports disciplines, custom categories (beyond just Boys/Girls), and result formats
+            Configure sports disciplines, result formats, and upload official PDF rulebooks
           </p>
         </div>
 
@@ -98,36 +177,52 @@ export default function AdminSportsPage() {
       </div>
 
       {message && (
-        <div className="p-3 rounded-lg bg-surfaceLight border border-athlos-gold text-xs text-athlos-gold">
-          {message}
+        <div
+          className={`p-3.5 rounded-xl border text-xs flex items-center space-x-2 ${
+            message.type === 'success'
+              ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300'
+              : 'bg-red-950/40 border-red-500/50 text-red-300'
+          }`}
+        >
+          {message.type === 'success' ? (
+            <CheckCircle className="w-4 h-4 flex-shrink-0 text-emerald-400" />
+          ) : (
+            <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-400" />
+          )}
+          <span>{message.text}</span>
         </div>
       )}
 
       {/* Sports Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {sports.map((sport) => {
           const cats = categories.filter((c) => c.sportId === sport.id);
+          const hasRulebook = Boolean(sport.rulebookUrl && sport.rulebookPublished);
+          const isUploading = uploadingSportId === sport.id;
 
           return (
             <div
               key={sport.id}
-              className="esports-card rounded-xl p-5 border-surfaceBorder flex flex-col justify-between"
+              className="esports-card rounded-xl p-5 border-surfaceBorder flex flex-col justify-between hover:border-athlos-gold/40 transition bg-[#0d1017]"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-black uppercase tracking-wider text-athlos-gold">
+                  <span className="text-base font-black uppercase tracking-wider text-white">
                     {sport.name}
                   </span>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-surfaceLight text-slate-300 border border-surfaceBorder">
-                    Format: {sport.scoreFormatType}
+                    {sport.scoreFormatType}
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-400 mb-4">{sport.description}</p>
+                <p className="text-xs text-slate-400 mb-4 line-clamp-2">
+                  {sport.description || `Official tournament discipline for War of Batches 2026–27.`}
+                </p>
 
-                <div className="space-y-1.5">
+                {/* Categories */}
+                <div className="space-y-1.5 mb-4">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
-                    Configured Categories ({cats.length})
+                    Categories ({cats.length}):
                   </span>
                   <div className="flex flex-wrap gap-1">
                     {cats.map((c) => (
@@ -140,9 +235,83 @@ export default function AdminSportsPage() {
                     ))}
                   </div>
                 </div>
+
+                {/* Rulebook Status Card */}
+                <div className="p-3.5 rounded-lg bg-black/60 border border-surfaceBorder space-y-2.5 my-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
+                      <FileText className="w-3.5 h-3.5 text-athlos-gold" />
+                      <span>Official Rulebook</span>
+                    </span>
+                    {hasRulebook ? (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-[9px] font-black uppercase tracking-wider">
+                        Published PDF
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700 text-slate-400 text-[9px] font-bold uppercase tracking-wider">
+                        No Document
+                      </span>
+                    )}
+                  </div>
+
+                  {hasRulebook ? (
+                    <div className="space-y-2">
+                      <div className="text-[11px] text-slate-300 font-mono truncate">
+                        {sport.rulebookOriginalName || 'official_rulebook.pdf'}
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] text-slate-500">
+                        <span>
+                          {sport.rulebookUploadedAt
+                            ? new Date(sport.rulebookUploadedAt).toLocaleDateString('en-GB')
+                            : 'Uploaded'}
+                        </span>
+                        {sport.rulebookSize && (
+                          <span>{(sport.rulebookSize / 1024).toFixed(0)} KB</span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center space-x-2 pt-1 border-t border-surfaceBorder/60">
+                        <a
+                          href={sport.rulebookUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 py-1.5 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 text-athlos-gold text-[10px] font-bold uppercase tracking-wider flex items-center justify-center space-x-1 transition"
+                        >
+                          <span>View PDF</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                        <button
+                          onClick={() => triggerUpload(sport.id)}
+                          disabled={isUploading}
+                          className="py-1.5 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 text-slate-300 text-[10px] font-bold uppercase tracking-wider transition"
+                        >
+                          Replace
+                        </button>
+                        <button
+                          onClick={() => handleUnpublish(sport.id, sport.name)}
+                          className="p-1.5 rounded bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 transition"
+                          title="Unpublish Rulebook"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <button
+                        onClick={() => triggerUpload(sport.id)}
+                        disabled={isUploading}
+                        className="w-full py-2 px-3 rounded-lg bg-surfaceLight hover:bg-surfaceLight/80 border border-athlos-gold/30 text-athlos-gold text-[11px] font-black uppercase tracking-wider flex items-center justify-center space-x-1.5 transition"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>{isUploading ? 'Uploading...' : 'Upload Rulebook PDF'}</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="pt-3 mt-4 border-t border-surfaceBorder/60 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+              <div className="pt-3 border-t border-surfaceBorder/60 flex items-center justify-between text-[11px] text-slate-500 font-mono">
                 <span>Slug: {sport.slug}</span>
                 <span className="text-emerald-400 font-bold">Enabled</span>
               </div>
@@ -219,7 +388,7 @@ export default function AdminSportsPage() {
                   type="text"
                   value={categoriesInput}
                   onChange={(e) => setCategoriesInput(e.target.value)}
-                  placeholder="Boys, Girls, Mixed, Under-21, 100M"
+                  placeholder="Boys, Girls, Mixed"
                   className="w-full px-3 py-2 bg-surfaceLight border border-surfaceBorder rounded text-white"
                 />
               </div>

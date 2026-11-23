@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { LeaderboardEntry } from '@/lib/db/public';
 import PollVoteButton from '@/components/PollVoteButton';
-import LuxuryHero from './LuxuryHero';
+import CosmicPlanetaryHero from '@/components/cosmic/CosmicPlanetaryHero';
 import LuxuryHeadlineTicker, { HeadlineItem } from './LuxuryHeadlineTicker';
 import LuxuryLeaderboard from './LuxuryLeaderboard';
 import LeaderboardDetailDrawer from './LeaderboardDetailDrawer';
@@ -58,8 +58,8 @@ export default function LuxuryHomeClient({
         </div>
       )}
 
-      {/* 2. Black & Gold Luxury Championship Hero */}
-      <LuxuryHero leaderboard={leaderboard} onSelectBatch={setSelectedBatch} />
+      {/* 2. Cinematic Cosmic Planetary 3D Hero */}
+      <CosmicPlanetaryHero onExploreClick={() => {}} />
 
       {/* 3. Infinite Continuous Moving Headline Strip */}
       <LuxuryHeadlineTicker items={headlineItems} speedSeconds={38} />

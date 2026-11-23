@@ -39,6 +39,11 @@ export interface Sport {
   icon?: string;
   scoreFormatType: 'SCORE' | 'SETS' | 'RACE_TIME' | 'POINTS' | 'PENALTIES' | 'GENERIC';
   enabled: boolean;
+  rulebookUrl?: string;
+  rulebookOriginalName?: string;
+  rulebookUploadedAt?: string;
+  rulebookSize?: number;
+  rulebookPublished?: boolean;
 }
 
 export interface Category {

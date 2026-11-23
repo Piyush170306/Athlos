@@ -60,12 +60,12 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/matches" className="hover:text-[#E6CA83] transition">
-                  Schedule & Fixtures
+                  Tournament Fixtures
                 </Link>
               </li>
               <li>
                 <Link href="/sports" className="hover:text-[#E6CA83] transition">
-                  Sports & Formats
+                  Competition Rules
                 </Link>
               </li>
               <li>

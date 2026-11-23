@@ -8,8 +8,8 @@ import { Shield, Trophy, Calendar, Flame, BarChart2, History, Menu, X } from 'lu
 const NAV_LINKS = [
   { href: '/', label: 'Home', icon: Shield },
   { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-  { href: '/matches', label: 'Matches', icon: Calendar },
-  { href: '/sports', label: 'Sports', icon: Flame },
+  { href: '/matches', label: 'Fixtures', icon: Calendar },
+  { href: '/sports', label: 'Rules', icon: Flame },
   { href: '/highlights', label: 'Highlights', icon: Flame },
   { href: '/polls', label: 'Predictions', icon: BarChart2 },
   { href: '/history', label: 'Past Seasons', icon: History },
@@ -23,7 +23,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-40 bg-[#080808]/92 backdrop-blur-md border-b border-[#302719] w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo Brand */}
+          {/* Logo Brand: Strictly ATHLOS only */}
           <Link href="/" className="flex items-center space-x-3 group flex-shrink-0">
             <div className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-[#17140E] border border-[#C6A45A]/40 group-hover:border-[#E6CA83] transition shadow-[0_0_15px_rgba(230,202,131,0.2)]">
               <img
@@ -36,17 +36,9 @@ export default function Navbar() {
               />
             </div>
             <div>
-              <div className="flex items-center space-x-2">
-                <span className="font-spartan font-black text-base tracking-wider uppercase gold-metallic-text">
-                  ATHLOS
-                </span>
-                <span className="text-[10px] font-mono font-bold tracking-widest px-1.5 py-0.5 rounded bg-[#1f1910] text-[#E6CA83] border border-[#C6A45A]/40">
-                  2026–27
-                </span>
-              </div>
-              <p className="text-[11px] font-seasons italic text-[#F5EBD4]/70 tracking-wider">
-                War of Batches
-              </p>
+              <span className="font-spartan font-black text-xl tracking-[0.18em] uppercase gold-metallic-text">
+                ATHLOS
+              </span>
             </div>
           </Link>
 
