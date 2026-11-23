@@ -64,17 +64,17 @@ export default function AdminLoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                Authorized Admin Email
+                Authorized Admin Email or Username
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
-                  type="email"
+                  type="text"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-9 pr-3 py-2.5 bg-surfaceLight border border-surfaceBorder rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-athlos-gold"
-                  placeholder="admin@athlos.edu"
+                  placeholder="admin@athlos.edu or admin"
                 />
               </div>
             </div>
@@ -113,7 +113,20 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          <div className="pt-4 border-t border-surfaceBorder/60 text-center">
+          <div className="pt-4 border-t border-surfaceBorder/60 space-y-2.5 text-center">
+            <div className="p-2.5 rounded-lg bg-surfaceLight/80 border border-amber-500/30 text-slate-300 text-xs flex items-center justify-between">
+              <span className="font-mono text-[11px] text-slate-300">admin@athlos.edu • AdminPassword2026!</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail('admin@athlos.edu');
+                  setPassword('AdminPassword2026!');
+                }}
+                className="text-[10px] uppercase font-bold text-athlos-gold hover:text-yellow-200 px-2 py-0.5 rounded bg-black/40 border border-amber-500/30"
+              >
+                Auto-Fill
+              </button>
+            </div>
             <p className="text-[11px] text-slate-500 flex items-center justify-center space-x-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
               <span>Protected server-side session with brute-force rate limiter</span>

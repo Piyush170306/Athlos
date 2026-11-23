@@ -12,9 +12,10 @@ export async function POST(req: NextRequest) {
   }
 
   const response = NextResponse.json({ success: true, message: 'Logged out successfully' });
+  const isHttps = req.headers.get('x-forwarded-proto') === 'https' || req.nextUrl.protocol === 'https:';
   response.cookies.set('athlos_admin_session', '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: isHttps,
     sameSite: 'lax',
     path: '/',
     maxAge: 0,

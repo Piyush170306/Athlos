@@ -38,9 +38,10 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const isHttps = req.headers.get('x-forwarded-proto') === 'https' || req.nextUrl.protocol === 'https:';
     response.cookies.set('athlos_admin_session', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isHttps,
       sameSite: 'lax',
       path: '/',
       maxAge: 8 * 60 * 60, // 8 hours
