@@ -13,8 +13,10 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { LeaderboardEntry } from '@/lib/db/public';
+import { PointsProgressionData } from '@/lib/db/pointsHistory';
 import PollVoteButton from '@/components/PollVoteButton';
 import CinematicEarthHero from '@/components/cosmic/CinematicEarthHero';
+import BattleForLeadGraph from '@/components/cosmic/BattleForLeadGraph';
 import LuxuryHeadlineTicker, { HeadlineItem } from './LuxuryHeadlineTicker';
 import LuxuryLeaderboard from './LuxuryLeaderboard';
 import LeaderboardDetailDrawer from './LeaderboardDetailDrawer';
@@ -22,6 +24,7 @@ import TiltCard from './TiltCard';
 
 interface LuxuryHomeClientProps {
   leaderboard: LeaderboardEntry[];
+  pointsProgression: PointsProgressionData;
   upcomingMatches: any[];
   completedMatches: any[];
   highlights: any[];
@@ -32,6 +35,7 @@ interface LuxuryHomeClientProps {
 
 export default function LuxuryHomeClient({
   leaderboard,
+  pointsProgression,
   upcomingMatches,
   completedMatches,
   highlights,
@@ -58,14 +62,17 @@ export default function LuxuryHomeClient({
         </div>
       )}
 
-      {/* 2. Cinematic Earth Hero with Physical 3D Typography Ring */}
-      <CinematicEarthHero onExploreClick={() => {}} />
-
-      {/* 3. Infinite Continuous Moving Headline Strip */}
+      {/* 2. PART 4 — Infinite Moving Ticker Directly Under Main Header */}
       <LuxuryHeadlineTicker items={headlineItems} speedSeconds={38} />
 
-      {/* 4. Dynamic Black & Gold Leaderboard with Click-Through Zoom */}
+      {/* 3. Homepage Hero: Cinematic Earth with Physical 3D Typography Ring */}
+      <CinematicEarthHero onExploreClick={() => {}} />
+
+      {/* 4. Official Leaderboard Section */}
       <LuxuryLeaderboard leaderboard={leaderboard} onSelectBatch={setSelectedBatch} />
+
+      {/* 5. PART 5 — New Feature: Excel-Connected Animated Points Progression Graph with Mascot Pointers */}
+      <BattleForLeadGraph initialData={pointsProgression} />
 
       {/* 5. Scoreboard & Upcoming Fixtures */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

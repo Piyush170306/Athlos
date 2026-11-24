@@ -151,17 +151,22 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
 
     // B. Lighting Setup
     // Key Sun Light: Radiant light kissing the Earth's curvature (matches Reference Images)
-    const sunLight = new THREE.DirectionalLight(0xfff8ee, 4.2);
-    sunLight.position.set(8.5, 4.2, 5.5);
+    const sunLight = new THREE.DirectionalLight(0xfff8ee, 4.0);
+    sunLight.position.set(7.5, 3.5, 6.0);
     scene.add(sunLight);
+
+    // Front-Facing Fill Light: Illuminates visible geographical land, oceans, and cloud details across the visible planet
+    const frontFillLight = new THREE.DirectionalLight(0xdbeafe, 2.6);
+    frontFillLight.position.set(2.0, 1.8, 7.5);
+    scene.add(frontFillLight);
 
     // Atmospheric Blue-White Rim Light: Razor-sharp horizon rim glow
     const atmosphericRimLight = new THREE.DirectionalLight(0x79c9f2, 3.4);
     atmosphericRimLight.position.set(-3.5, 3.0, -6.5);
     scene.add(atmosphericRimLight);
 
-    // Cosmic Midnight Ambient Light
-    const ambientLight = new THREE.AmbientLight(0x050b16, 0.95);
+    // Cosmic Midnight Ambient Light (balanced to ensure visible front-facing geographical depth)
+    const ambientLight = new THREE.AmbientLight(0x1a2b42, 1.6);
     scene.add(ambientLight);
 
     // Shimmering Ice-Blue Point Light: Catches metallic silver typography in front
@@ -371,7 +376,8 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
       void main() {
         vec3 viewDir = normalize(-vPosition);
         float dotProduct = max(dot(vNormal, viewDir), 0.0);
-        float fresnel = pow(1.0 - dotProduct, 2.7);
+        float fresnel = pow(1.0 - dotProduct, 2.5);
+        float surfaceScatter = pow(dotProduct, 1.6) * 0.16; // Soft natural atmospheric light across visible surface
         
         // Ethereal ice-blue atmospheric rim blending into brilliant starlight white crest
         vec3 deepBlue = vec3(0.11, 0.37, 0.57);    // #1D5E91
@@ -379,9 +385,9 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
         vec3 starlightWhite = vec3(0.95, 0.97, 1.0); // #F2F7FC
         
         vec3 rimCol = mix(deepBlue, iceBlueRim, smoothstep(0.0, 0.7, fresnel));
-        rimCol = mix(rimCol, starlightWhite, pow(fresnel, 2.8));
+        rimCol = mix(rimCol, starlightWhite, pow(fresnel, 2.6));
         
-        gl_FragColor = vec4(rimCol, fresnel * 0.98);
+        gl_FragColor = vec4(rimCol, fresnel * 0.96 + surfaceScatter);
       }
     `;
 
@@ -436,9 +442,10 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
         ringParent.add(ringRotGroup);
 
         // Exact text required by the user: "ATHLOS WAR OF BATCHES 2026-27"
+        // Strictly NO unsupported symbols (e.g. no unicode characters that trigger fallback '?')
         const phrase = 'ATHLOS WAR OF BATCHES 2026-27';
-        // 2 complete repetitions around the 360-degree orbit with star diamond spacers
-        const fullLoop = `${phrase}   ✦   ${phrase}   ✦   `;
+        // 2 complete repetitions around the 360-degree orbit with clean spacing
+        const fullLoop = `${phrase}      ${phrase}      `;
         const characters = Array.from(fullLoop);
         const totalChars = characters.length;
         // Orbit radius 5.7 units (accommodates larger letter size cleanly around Earth 3.55)
@@ -446,7 +453,8 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
         const angleStep = (Math.PI * 2) / totalChars;
 
         characters.forEach((char, i) => {
-          if (char === ' ') return; // Skip whitespace
+          // Skip whitespace or any glyph not explicitly defined in the typeface to eliminate any fallback '?'
+          if (char === ' ' || !font.data.glyphs[char]) return;
 
           const angle = i * angleStep;
 
@@ -572,12 +580,14 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
     };
     window.addEventListener('resize', handleResize);
 
-    // J. Main 60fps Animation Loop
+    // J. Main 60fps Animation Loop with Delta-Time Smooth Timing
     let animId: number;
     let isVisible = true;
+    const clock = new THREE.Clock();
 
     const handleVisibility = () => {
       isVisible = !document.hidden;
+      if (isVisible) clock.getDelta(); // reset delta on resume to avoid jump
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
@@ -585,6 +595,8 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
       animId = requestAnimationFrame(animate);
 
       if (!isVisible) return;
+
+      const delta = Math.min(clock.getDelta(), 0.08); // Stable delta timing
 
       // Mouse lerp with smooth inertia
       mouseX += (targetMouseX - mouseX) * 0.05;
@@ -619,20 +631,20 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
         camera.position.y = -mouseY * 0.28;
         camera.lookAt(0, 0, 0);
 
-        // Independent slow Earth rotation around its axis
-        earthSphere.rotation.y += 0.0008;
+        // Independent, smoother Earth rotation around its axis
+        earthSphere.rotation.y += 0.024 * delta;
 
-        // Cloud layer drifts slightly faster for realism
-        cloudSphere.rotation.y += 0.0011;
+        // Cloud layer drifts smoothly for realistic atmospheric movement
+        cloudSphere.rotation.y += 0.038 * delta;
 
-        // Continuous REVERSED orbital traveling motion of the 3D typography ring
-        // Slower majestic speed: -0.0030 (inverted direction from previous += 0.0055)
+        // Continuous orbital traveling motion of the 3D typography ring
+        // Reversed direction (+=) at a substantially reduced, slow, majestic speed
         if (ringRotGroup) {
-          ringRotGroup.rotation.y -= 0.0030;
+          ringRotGroup.rotation.y += 0.055 * delta;
         }
 
         // Subtle stellar background drift
-        stars.rotation.y += 0.00015;
+        stars.rotation.y += 0.005 * delta;
       }
 
       renderer.render(scene, camera);
