@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { LeaderboardEntry } from '@/lib/db/public';
 import PollVoteButton from '@/components/PollVoteButton';
-import CosmicPlanetaryHero from '@/components/cosmic/CosmicPlanetaryHero';
+import CinematicEarthHero from '@/components/cosmic/CinematicEarthHero';
 import LuxuryHeadlineTicker, { HeadlineItem } from './LuxuryHeadlineTicker';
 import LuxuryLeaderboard from './LuxuryLeaderboard';
 import LeaderboardDetailDrawer from './LeaderboardDetailDrawer';
@@ -58,8 +58,8 @@ export default function LuxuryHomeClient({
         </div>
       )}
 
-      {/* 2. Cinematic Cosmic Planetary 3D Hero */}
-      <CosmicPlanetaryHero onExploreClick={() => {}} />
+      {/* 2. Cinematic Earth Hero with Physical 3D Typography Ring */}
+      <CinematicEarthHero onExploreClick={() => {}} />
 
       {/* 3. Infinite Continuous Moving Headline Strip */}
       <LuxuryHeadlineTicker items={headlineItems} speedSeconds={38} />

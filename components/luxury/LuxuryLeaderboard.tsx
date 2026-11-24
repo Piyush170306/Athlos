@@ -55,27 +55,27 @@ export default function LuxuryLeaderboard({
           const isRank2 = entry.rank === 2;
           const isRank3 = entry.rank === 3;
 
-          let cardBorder = 'border-[#302719]';
-          let cardBg = 'from-[#14110C] via-[#0D0B08] to-[#080808]';
+          let cardBorder = 'border-[#49351E]/60';
+          let cardBg = 'from-[#1A140E] via-[#100D09] to-[#080706]';
           let rankColor = 'text-slate-600/70';
           let pointsGlow = 'text-white';
           let statusLabel = 'RUNNER UP';
 
           if (isRank1) {
-            cardBorder = 'border-[#E6CA83]/50 shadow-[0_0_35px_rgba(230,202,131,0.18)]';
-            cardBg = 'from-[#221B0F] via-[#151108] to-[#080808]';
-            rankColor = 'text-[#E6CA83]/50';
-            pointsGlow = 'text-[#E6CA83] drop-shadow-[0_0_15px_rgba(230,202,131,0.4)]';
+            cardBorder = 'border-[#E3C276]/60 shadow-[0_0_35px_rgba(227,194,118,0.22)]';
+            cardBg = 'from-[#2A1F13] via-[#1A140E] to-[#080706]';
+            rankColor = 'text-[#E3C276]/50';
+            pointsGlow = 'text-[#E3C276] drop-shadow-[0_0_15px_rgba(227,194,118,0.45)]';
             statusLabel = 'TOURNAMENT LEADER';
           } else if (isRank2) {
             cardBorder = 'border-slate-500/40 shadow-[0_0_20px_rgba(148,163,184,0.1)]';
-            cardBg = 'from-[#141822] via-[#0E1017] to-[#080808]';
+            cardBg = 'from-[#141822] via-[#0E1017] to-[#080706]';
             rankColor = 'text-slate-400/40';
             pointsGlow = 'text-slate-100';
             statusLabel = 'SECOND PLACE';
           } else if (isRank3) {
-            cardBorder = 'border-[#3D2C1B]/60 shadow-[0_0_20px_rgba(180,83,9,0.1)]';
-            cardBg = 'from-[#1C140C] via-[#100C07] to-[#080808]';
+            cardBorder = 'border-[#49351E]/70 shadow-[0_0_20px_rgba(180,83,9,0.12)]';
+            cardBg = 'from-[#21180F] via-[#100D09] to-[#080706]';
             rankColor = 'text-amber-800/40';
             pointsGlow = 'text-[#F5EBD4]/90';
             statusLabel = 'THIRD PLACE';

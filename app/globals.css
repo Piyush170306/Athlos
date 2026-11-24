@@ -5,19 +5,20 @@
 @tailwind utilities;
 
 :root {
-  --background: #080808;
+  --background: #080706;
   --foreground: #f5ebd4;
-  --matte-black: #080808;
-  --black-bronze: #17140e;
-  --dark-gold: #302719;
+  --matte-black: #080706;
+  --deep-black-brown: #100d09;
+  --dark-bronze: #21180f;
+  --warm-brown-gold: #49351e;
   --champagne-gold: #c6a45a;
-  --metallic-gold: #e6ca83;
+  --metallic-gold: #e3c276;
   --warm-ivory: #f5ebd4;
 }
 
 body {
   color: var(--foreground);
-  background: radial-gradient(circle at 50% 0%, #17140e 0%, #080808 65%);
+  background: radial-gradient(circle at 65% -10%, #21180f 0%, #100d09 40%, #080706 75%);
   font-family: 'Manrope', 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
@@ -30,47 +31,48 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #080808;
+  background: #080706;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #302719;
+  background: #21180f;
   border-radius: 4px;
+  border: 1px solid #49351e;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #c6a45a;
 }
 
-/* Luxury Matte-Black & Gold Surfaces */
+/* Luxury Matte-Black & Deep Brown-Gold Surfaces */
 .luxury-card {
-  background: linear-gradient(145deg, rgba(23, 20, 14, 0.85) 0%, rgba(8, 8, 8, 0.95) 100%);
-  border: 1px solid rgba(198, 164, 90, 0.22);
+  background: linear-gradient(145deg, rgba(33, 24, 15, 0.85) 0%, rgba(8, 7, 6, 0.95) 100%);
+  border: 1px solid rgba(198, 164, 90, 0.25);
   backdrop-filter: blur(14px);
   transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .luxury-card:hover {
-  border-color: rgba(230, 202, 131, 0.55);
-  box-shadow: 0 10px 30px -10px rgba(198, 164, 90, 0.2);
+  border-color: rgba(227, 194, 118, 0.6);
+  box-shadow: 0 10px 30px -10px rgba(198, 164, 90, 0.25);
   transform: translateY(-2px);
 }
 
 .luxury-card-gold {
-  background: linear-gradient(145deg, rgba(48, 39, 25, 0.6) 0%, rgba(15, 13, 9, 0.95) 100%);
-  border: 1px solid rgba(230, 202, 131, 0.45);
-  box-shadow: 0 0 25px rgba(230, 202, 131, 0.12);
+  background: linear-gradient(145deg, rgba(73, 53, 30, 0.65) 0%, rgba(16, 13, 9, 0.95) 100%);
+  border: 1px solid rgba(227, 194, 118, 0.5);
+  box-shadow: 0 0 25px rgba(227, 194, 118, 0.15);
 }
 
 .luxury-card-gold:hover {
-  border-color: rgba(230, 202, 131, 0.85);
-  box-shadow: 0 0 35px rgba(230, 202, 131, 0.25);
+  border-color: rgba(227, 194, 118, 0.9);
+  box-shadow: 0 0 35px rgba(227, 194, 118, 0.3);
 }
 
-/* Legacy compatibility classes mapped to luxury palette */
+/* Legacy compatibility classes mapped to deep brown-gold palette */
 .esports-card {
-  background: linear-gradient(145deg, rgba(23, 20, 14, 0.85) 0%, rgba(8, 8, 8, 0.95) 100%);
-  border: 1px solid #302719;
+  background: linear-gradient(145deg, rgba(33, 24, 15, 0.85) 0%, rgba(8, 7, 6, 0.95) 100%);
+  border: 1px solid #49351e;
   backdrop-filter: blur(14px);
   transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -80,8 +82,8 @@ body {
 }
 
 .esports-card-gold {
-  background: linear-gradient(145deg, rgba(48, 39, 25, 0.6) 0%, rgba(15, 13, 9, 0.95) 100%);
-  border: 1px solid rgba(230, 202, 131, 0.4);
+  background: linear-gradient(145deg, rgba(73, 53, 30, 0.65) 0%, rgba(16, 13, 9, 0.95) 100%);
+  border: 1px solid rgba(227, 194, 118, 0.45);
 }
 
 /* Typography Utility Classes */

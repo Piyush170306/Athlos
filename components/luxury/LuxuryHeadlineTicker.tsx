@@ -42,11 +42,11 @@ export default function LuxuryHeadlineTicker({
       onTouchStart={() => setIsPaused(true)}
       onTouchEnd={() => setIsPaused(false)}
       title="Hover or touch to pause stream"
-      className="relative w-full overflow-hidden border-y border-[#302719] bg-[#0c0a07] py-3 select-none backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.7)] cursor-grab active:cursor-grabbing"
+      className="relative w-full overflow-hidden border-y border-[#21180F] bg-[#0c0a08] py-3 select-none backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.7)] cursor-grab active:cursor-grabbing"
     >
       {/* Edge gradient fade masks for high-end cinematic feel */}
-      <div className="absolute left-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-r from-[#0c0a07] to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-l from-[#0c0a07] to-transparent z-10 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-r from-[#0c0a08] to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-l from-[#0c0a08] to-transparent z-10 pointer-events-none" />
 
       {/* Marquee Track */}
       <div

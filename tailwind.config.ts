@@ -10,21 +10,25 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#080808",
-        surface: "#11100D",
-        surfaceLight: "#17140E",
-        surfaceBorder: "#302719",
-        matteBlack: "#080808",
-        blackBronze: "#17140E",
-        darkGold: "#302719",
+        background: "#080706",
+        surface: "#100D09",
+        surfaceLight: "#21180F",
+        surfaceBorder: "#49351E",
+        matteBlack: "#080706",
+        deepBlackBrown: "#100D09",
+        blackBronze: "#21180F",
+        darkBronze: "#21180F",
+        warmBrownGold: "#49351E",
+        darkGold: "#49351E",
         champagneGold: "#C6A45A",
-        metallicGold: "#E6CA83",
+        metallicGold: "#E3C276",
         warmIvory: "#F5EBD4",
         athlos: {
-          gold: "#E6CA83",
+          gold: "#E3C276",
           goldLight: "#F5EBD4",
           goldDark: "#C6A45A",
-          bronze: "#17140E",
+          bronze: "#21180F",
+          brown: "#49351E",
         },
         batch: {
           ipm06: {

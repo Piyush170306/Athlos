@@ -4,7 +4,7 @@ import { ShieldCheck, Clock } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#060504] border-t border-[#302719] mt-20 text-slate-400 text-xs">
+    <footer className="bg-[#080706] border-t border-[#21180F] mt-20 text-slate-400 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Tournament Overview */}
@@ -21,7 +21,7 @@ export default function Footer() {
               The premier inter-batch sports championship competing across 15 sporting disciplines with verified schedules and authoritative results.
             </p>
             <div className="flex items-center space-x-2 text-emerald-400 font-medium text-[11px] pt-1">
-              <ShieldCheck className="w-4 h-4 text-[#E6CA83]" />
+              <ShieldCheck className="w-4 h-4 text-[#E3C276]" />
               <span>Official Leaderboard authority: Approved Batch Scores Table</span>
             </div>
           </div>
