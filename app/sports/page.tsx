@@ -14,9 +14,9 @@ export default function SportsRulesPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Header */}
-      <div className="border-b border-[#302719] pb-6">
-        <div className="flex items-center space-x-2 text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#C6A45A] mb-1.5">
-          <BookOpen className="w-4 h-4 text-[#E6CA83]" />
+      <div className="border-b border-[#0B1727] pb-6">
+        <div className="flex items-center space-x-2 text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#79C9F2] mb-1.5">
+          <BookOpen className="w-4 h-4 text-[#79C9F2]" />
           <span>Official Tournament Guidelines</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-spartan font-black uppercase text-white tracking-wider">
@@ -38,19 +38,19 @@ export default function SportsRulesPage() {
           return (
             <div
               key={sport.id}
-              className="group rounded-2xl p-6 flex flex-col justify-between border border-[#302719] bg-gradient-to-b from-[#14110C] to-[#080808] hover:border-[#E6CA83]/60 hover:shadow-[0_8px_30px_rgba(230,202,131,0.15)] transition-all duration-300"
+              className="group rounded-2xl p-6 flex flex-col justify-between border border-[#1D5E91]/40 bg-gradient-to-b from-[#0B1727] to-[#050B16] hover:border-[#79C9F2]/70 hover:shadow-[0_8px_30px_rgba(121,201,242,0.2)] transition-all duration-300"
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#17140E] border border-[#302719] flex items-center justify-center text-[#E6CA83] group-hover:scale-105 transition">
-                    <FileText className="w-5 h-5 text-[#E6CA83]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#050B16] border border-[#1D5E91]/60 flex items-center justify-center text-[#79C9F2] group-hover:scale-105 transition">
+                    <FileText className="w-5 h-5 text-[#79C9F2]" />
                   </div>
-                  <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-[#1e1910] text-[#E6CA83] border border-[#302719]">
+                  <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-[#050B16] text-[#79C9F2] border border-[#1D5E91]/50">
                     {sport.scoreFormatType}
                   </span>
                 </div>
 
-                <h3 className="text-2xl font-spartan font-black uppercase tracking-wider text-white group-hover:text-[#E6CA83] transition">
+                <h3 className="text-2xl font-spartan font-black uppercase tracking-wider text-white group-hover:text-[#79C9F2] transition">
                   {sport.name}
                 </h3>
                 <p className="text-xs text-slate-400 mt-1 mb-4 leading-relaxed font-manrope">
@@ -67,7 +67,7 @@ export default function SportsRulesPage() {
                       {sportCats.map((cat) => (
                         <span
                           key={cat}
-                          className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase bg-black/60 text-slate-300 border border-[#302719]"
+                          className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase bg-[#03060B] text-slate-300 border border-[#0B1727]"
                         >
                           {cat}
                         </span>
@@ -78,17 +78,17 @@ export default function SportsRulesPage() {
               </div>
 
               {/* Rulebook Download / View Link */}
-              <div className="pt-4 border-t border-[#302719]/60 flex items-center justify-between text-xs">
+              <div className="pt-4 border-t border-[#0B1727] flex items-center justify-between text-xs">
                 {hasRulebook ? (
                   <a
                     href={sport.rulebookUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#1e1910] border border-[#C6A45A]/50 text-[#E6CA83] hover:text-white font-spartan font-bold uppercase tracking-wider transition text-[11px]"
+                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#0B1727] border border-[#1D5E91] text-[#F2F7FC] hover:text-[#79C9F2] font-spartan font-bold uppercase tracking-wider transition text-[11px]"
                   >
                     <FileText className="w-3.5 h-3.5" />
                     <span>Rule Book (PDF)</span>
-                    <ExternalLink className="w-3 h-3 text-[#C6A45A]" />
+                    <ExternalLink className="w-3 h-3 text-[#79C9F2]" />
                   </a>
                 ) : (
                   <span className="text-[10px] font-mono text-slate-500 uppercase flex items-center space-x-1">

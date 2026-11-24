@@ -23,18 +23,18 @@ export default function SportRulesDetailPage({ params }: { params: { slug: strin
       {/* Back button */}
       <Link
         href="/sports"
-        className="inline-flex items-center space-x-1.5 text-xs font-spartan font-bold uppercase tracking-wider text-slate-400 hover:text-[#E6CA83] transition"
+        className="inline-flex items-center space-x-1.5 text-xs font-spartan font-bold uppercase tracking-wider text-slate-400 hover:text-[#79C9F2] transition"
       >
-        <ArrowLeft className="w-4 h-4 text-[#C6A45A]" />
+        <ArrowLeft className="w-4 h-4 text-[#79C9F2]" />
         <span>Back to All Rules</span>
       </Link>
 
       {/* Header */}
-      <div className="rounded-3xl p-6 sm:p-8 border border-[#302719] bg-gradient-to-b from-[#17140E] to-[#0A0907] shadow-xl">
+      <div className="rounded-3xl p-6 sm:p-8 border border-[#1D5E91]/40 bg-gradient-to-b from-[#0B1727] to-[#050B16] shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center space-x-2 text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#C6A45A] mb-1">
-              <BookOpen className="w-4 h-4 text-[#E6CA83]" />
+            <div className="flex items-center space-x-2 text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#79C9F2] mb-1">
+              <BookOpen className="w-4 h-4 text-[#79C9F2]" />
               <span>Official Tournament Rulebook</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-spartan font-black uppercase text-white tracking-wider">
@@ -45,11 +45,11 @@ export default function SportRulesDetailPage({ params }: { params: { slug: strin
             </p>
           </div>
 
-          <div className="px-5 py-3 rounded-2xl bg-black/60 border border-[#302719] text-center sm:text-right">
+          <div className="px-5 py-3 rounded-2xl bg-black/60 border border-[#0B1727] text-center sm:text-right">
             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
               Result Format
             </span>
-            <span className="text-base font-spartan font-black text-[#E6CA83] tracking-wider">
+            <span className="text-base font-spartan font-black text-[#79C9F2] tracking-wider">
               {sport.scoreFormatType}
             </span>
           </div>
@@ -57,7 +57,7 @@ export default function SportRulesDetailPage({ params }: { params: { slug: strin
 
         {/* Categories Bar */}
         {categories.length > 0 && (
-          <div className="mt-6 pt-6 border-t border-[#302719]/60">
+          <div className="mt-6 pt-6 border-t border-[#0B1727]">
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 block mb-2">
               Sanctioned Categories
             </span>
@@ -65,7 +65,7 @@ export default function SportRulesDetailPage({ params }: { params: { slug: strin
               {categories.map((cat) => (
                 <span
                   key={cat.id}
-                  className="px-3 py-1 rounded-lg text-xs font-mono font-bold uppercase bg-[#14110C] text-[#F5EBD4] border border-[#302719]"
+                  className="px-3 py-1 rounded-lg text-xs font-mono font-bold uppercase bg-[#03060B] text-[#F2F7FC] border border-[#0B1727]"
                 >
                   {cat.name}
                 </span>
@@ -76,10 +76,10 @@ export default function SportRulesDetailPage({ params }: { params: { slug: strin
       </div>
 
       {/* Official Rulebook Section */}
-      <div className="rounded-3xl p-6 sm:p-8 border border-[#302719] bg-gradient-to-b from-[#14110C] to-[#080808] space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#302719] gap-3">
+      <div className="rounded-3xl p-6 sm:p-8 border border-[#1D5E91]/40 bg-gradient-to-b from-[#0B1727] to-[#050B16] space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#0B1727] gap-3">
           <div className="flex items-center space-x-2.5">
-            <FileText className="w-5 h-5 text-[#E6CA83]" />
+            <FileText className="w-5 h-5 text-[#79C9F2]" />
             <h2 className="text-xl sm:text-2xl font-spartan font-black uppercase tracking-wider text-white">
               Official Rulebook Document
             </h2>
@@ -90,11 +90,11 @@ export default function SportRulesDetailPage({ params }: { params: { slug: strin
               href={sport.rulebookUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-[#1e1910] hover:bg-[#282115] border border-[#C6A45A]/60 text-[#E6CA83] text-xs font-spartan font-bold uppercase tracking-wider transition shadow-sm"
+              className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-[#050B16] hover:bg-[#0B1727] border border-[#1D5E91] text-[#F2F7FC] text-xs font-spartan font-bold uppercase tracking-wider transition shadow-sm"
             >
-              <FileText className="w-4 h-4" />
+              <FileText className="w-4 h-4 text-[#79C9F2]" />
               <span>Open Fullscreen PDF</span>
-              <ExternalLink className="w-3.5 h-3.5 text-[#C6A45A]" />
+              <ExternalLink className="w-3.5 h-3.5 text-[#79C9F2]" />
             </a>
           )}
         </div>
@@ -109,7 +109,7 @@ export default function SportRulesDetailPage({ params }: { params: { slug: strin
             </div>
 
             {/* Embedded PDF Viewer */}
-            <div className="w-full h-[650px] sm:h-[800px] rounded-2xl overflow-hidden border border-[#302719] bg-black">
+            <div className="w-full h-[650px] sm:h-[800px] rounded-2xl overflow-hidden border border-[#0B1727] bg-black">
               <iframe
                 src={`${sport.rulebookUrl}#toolbar=1`}
                 title={`${sport.name} Official Rulebook PDF`}

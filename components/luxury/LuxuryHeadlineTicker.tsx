@@ -42,11 +42,11 @@ export default function LuxuryHeadlineTicker({
       onTouchStart={() => setIsPaused(true)}
       onTouchEnd={() => setIsPaused(false)}
       title="Hover or touch to pause stream"
-      className="relative w-full overflow-hidden border-y border-[#21180F] bg-[#0c0a08] py-3 select-none backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.7)] cursor-grab active:cursor-grabbing"
+      className="relative w-full overflow-hidden border-y border-[#0B1727] bg-[#050B16] py-3 select-none backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing"
     >
       {/* Edge gradient fade masks for high-end cinematic feel */}
-      <div className="absolute left-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-r from-[#0c0a08] to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-l from-[#0c0a08] to-transparent z-10 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-r from-[#050B16] to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-l from-[#050B16] to-transparent z-10 pointer-events-none" />
 
       {/* Marquee Track */}
       <div
@@ -61,10 +61,10 @@ export default function LuxuryHeadlineTicker({
           const content = (
             <div
               key={`${item.id}-${idx}`}
-              className="inline-flex items-center space-x-3 px-5 sm:px-7 font-spartan text-xs sm:text-sm uppercase tracking-wider transition-colors hover:text-[#E6CA83]"
+              className="inline-flex items-center space-x-3 px-5 sm:px-7 font-spartan text-xs sm:text-sm uppercase tracking-wider transition-colors hover:text-[#79C9F2]"
             >
               {item.badge && (
-                <span className="text-[10px] font-black tracking-widest px-2 py-0.5 rounded-full bg-[#1e1910] text-[#E6CA83] border border-[#C6A45A]/40 shadow-sm">
+                <span className="text-[10px] font-black tracking-widest px-2 py-0.5 rounded-full bg-[#0B1727] text-[#79C9F2] border border-[#1D5E91]/50 shadow-sm">
                   {item.badge}
                 </span>
               )}
@@ -72,15 +72,15 @@ export default function LuxuryHeadlineTicker({
               <span
                 className={`${
                   item.highlight
-                    ? 'gold-metallic-text font-black text-sm sm:text-base'
-                    : 'text-[#F5EBD4]/90 font-bold'
+                    ? 'cosmic-silver-text font-black text-sm sm:text-base drop-shadow-[0_0_12px_rgba(121,201,242,0.3)]'
+                    : 'text-[#F2F7FC]/90 font-bold'
                 }`}
               >
                 {item.text}
               </span>
 
-              {/* Luxury Diamond Separator */}
-              <span className="text-[#C6A45A]/70 font-light text-xs pl-3">✦</span>
+              {/* Cosmic Diamond Separator */}
+              <span className="text-[#79C9F2]/60 font-light text-xs pl-3">✦</span>
             </div>
           );
 

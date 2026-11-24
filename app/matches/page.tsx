@@ -93,12 +93,12 @@ export default function MatchesPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Page Header */}
-      <div className="border-b border-amber-500/20 pb-6">
-        <div className="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">
-          <Calendar className="w-4 h-4" />
+      <div className="border-b border-[#0B1727] pb-6">
+        <div className="flex items-center space-x-2 text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#79C9F2] mb-1">
+          <Calendar className="w-4 h-4 text-[#79C9F2]" />
           <span>Tournament Fixtures</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-spartan font-black uppercase text-white tracking-wider">
           Matches & Schedule
         </h1>
         <p className="text-xs text-slate-400 mt-1">

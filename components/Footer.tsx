@@ -4,13 +4,13 @@ import { ShieldCheck, Clock } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#080706] border-t border-[#21180F] mt-20 text-slate-400 text-xs">
+    <footer className="bg-[#03060B] border-t border-[#0B1727] mt-20 text-slate-400 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Tournament Overview */}
           <div className="md:col-span-2 space-y-3">
             <div className="flex items-center space-x-2">
-              <span className="font-spartan font-black text-base tracking-wider uppercase gold-metallic-text">
+              <span className="font-spartan font-black text-base tracking-wider uppercase cosmic-silver-text">
                 ATHLOS
               </span>
               <span className="text-white font-bold text-sm tracking-wide font-spartan">
@@ -21,7 +21,7 @@ export default function Footer() {
               The premier inter-batch sports championship competing across 15 sporting disciplines with verified schedules and authoritative results.
             </p>
             <div className="flex items-center space-x-2 text-emerald-400 font-medium text-[11px] pt-1">
-              <ShieldCheck className="w-4 h-4 text-[#E3C276]" />
+              <ShieldCheck className="w-4 h-4 text-[#79C9F2]" />
               <span>Official Leaderboard authority: Approved Batch Scores Table</span>
             </div>
           </div>
@@ -54,32 +54,32 @@ export default function Footer() {
             </h4>
             <ul className="space-y-1.5 font-manrope">
               <li>
-                <Link href="/leaderboard" className="hover:text-[#E6CA83] transition">
+                <Link href="/leaderboard" className="hover:text-[#79C9F2] transition">
                   Official Leaderboard
                 </Link>
               </li>
               <li>
-                <Link href="/matches" className="hover:text-[#E6CA83] transition">
+                <Link href="/matches" className="hover:text-[#79C9F2] transition">
                   Tournament Fixtures
                 </Link>
               </li>
               <li>
-                <Link href="/sports" className="hover:text-[#E6CA83] transition">
+                <Link href="/sports" className="hover:text-[#79C9F2] transition">
                   Competition Rules
                 </Link>
               </li>
               <li>
-                <Link href="/highlights" className="hover:text-[#E6CA83] transition">
+                <Link href="/highlights" className="hover:text-[#79C9F2] transition">
                   Tournament Highlights
                 </Link>
               </li>
               <li>
-                <Link href="/polls" className="hover:text-[#E6CA83] transition">
+                <Link href="/polls" className="hover:text-[#79C9F2] transition">
                   Match Predictions
                 </Link>
               </li>
               <li>
-                <Link href="/history" className="hover:text-[#E6CA83] transition">
+                <Link href="/history" className="hover:text-[#79C9F2] transition">
                   Past Seasons Archive
                 </Link>
               </li>
@@ -87,10 +87,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-6 border-t border-[#302719] flex flex-col sm:flex-row items-center justify-between text-slate-500 text-[11px] gap-3">
+        <div className="pt-6 border-t border-[#0B1727] flex flex-col sm:flex-row items-center justify-between text-slate-500 text-[11px] gap-3">
           <p>© 2026 ATHLOS Sports Committee. All Rights Reserved. Built for War of Batches.</p>
           <div className="flex items-center space-x-2 font-mono">
-            <Clock className="w-3.5 h-3.5 text-[#C6A45A]" />
+            <Clock className="w-3.5 h-3.5 text-[#79C9F2]" />
             <span>Timezone: Asia/Kolkata (IST, UTC+5:30)</span>
           </div>
         </div>

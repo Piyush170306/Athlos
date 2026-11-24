@@ -18,33 +18,33 @@ export default function LuxuryLeaderboard({
   return (
     <section id="leaderboard-section" className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-10">
       {/* Editorial Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-5 border-b border-[#302719] mb-8 gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-5 border-b border-[#0B1727] mb-8 gap-3">
         <div>
-          <div className="flex items-center space-x-2 text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#C6A45A] mb-1">
+          <div className="flex items-center space-x-2 text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#79C9F2] mb-1">
             <span>SEC. 01 / STANDINGS</span>
             <span className="text-slate-600">•</span>
             <span className="text-slate-400">BATCH SCORES TABLE</span>
           </div>
 
           <div className="flex items-center space-x-3">
-            <Trophy className="w-7 h-7 text-[#E6CA83] drop-shadow-[0_0_12px_rgba(230,202,131,0.5)]" />
+            <Trophy className="w-7 h-7 text-[#C7D3DF] drop-shadow-[0_0_12px_rgba(121,201,242,0.5)]" />
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-spartan font-black uppercase tracking-wider text-white">
               Official Leaderboard
             </h2>
           </div>
 
           <p className="text-xs text-slate-400 mt-1.5 flex items-center space-x-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#E6CA83]" />
+            <ShieldCheck className="w-3.5 h-3.5 text-[#79C9F2]" />
             <span>Authoritative totals from approved Batch Scores Table (Row 89)</span>
           </p>
         </div>
 
         <Link
           href="/leaderboard"
-          className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-[#17140E] hover:bg-[#221c13] border border-[#302719] text-[#E6CA83] text-xs font-spartan font-bold uppercase tracking-wider transition group shadow-sm"
+          className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-[#0B1727] hover:bg-[#12233C] border border-[#1D5E91] text-[#F2F7FC] hover:text-[#79C9F2] text-xs font-spartan font-bold uppercase tracking-wider transition group shadow-sm"
         >
           <span>Full Matrix & Standings</span>
-          <ArrowRight className="w-4 h-4 text-[#C6A45A] group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="w-4 h-4 text-[#79C9F2] group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 
@@ -55,29 +55,29 @@ export default function LuxuryLeaderboard({
           const isRank2 = entry.rank === 2;
           const isRank3 = entry.rank === 3;
 
-          let cardBorder = 'border-[#49351E]/60';
-          let cardBg = 'from-[#1A140E] via-[#100D09] to-[#080706]';
+          let cardBorder = 'border-[#1D5E91]/40';
+          let cardBg = 'from-[#0B1727] via-[#050B16] to-[#03060B]';
           let rankColor = 'text-slate-600/70';
           let pointsGlow = 'text-white';
           let statusLabel = 'RUNNER UP';
 
           if (isRank1) {
-            cardBorder = 'border-[#E3C276]/60 shadow-[0_0_35px_rgba(227,194,118,0.22)]';
-            cardBg = 'from-[#2A1F13] via-[#1A140E] to-[#080706]';
-            rankColor = 'text-[#E3C276]/50';
-            pointsGlow = 'text-[#E3C276] drop-shadow-[0_0_15px_rgba(227,194,118,0.45)]';
+            cardBorder = 'border-[#79C9F2]/70 shadow-[0_0_35px_rgba(121,201,242,0.22)]';
+            cardBg = 'from-[#0B1727] via-[#07111D] to-[#03060B]';
+            rankColor = 'text-[#79C9F2]/60';
+            pointsGlow = 'text-[#F2F7FC] drop-shadow-[0_0_15px_rgba(121,201,242,0.5)]';
             statusLabel = 'TOURNAMENT LEADER';
           } else if (isRank2) {
-            cardBorder = 'border-slate-500/40 shadow-[0_0_20px_rgba(148,163,184,0.1)]';
-            cardBg = 'from-[#141822] via-[#0E1017] to-[#080706]';
-            rankColor = 'text-slate-400/40';
+            cardBorder = 'border-[#C7D3DF]/40 shadow-[0_0_20px_rgba(199,211,223,0.1)]';
+            cardBg = 'from-[#0B1522] via-[#060D17] to-[#03060B]';
+            rankColor = 'text-[#C7D3DF]/50';
             pointsGlow = 'text-slate-100';
             statusLabel = 'SECOND PLACE';
           } else if (isRank3) {
-            cardBorder = 'border-[#49351E]/70 shadow-[0_0_20px_rgba(180,83,9,0.12)]';
-            cardBg = 'from-[#21180F] via-[#100D09] to-[#080706]';
-            rankColor = 'text-amber-800/40';
-            pointsGlow = 'text-[#F5EBD4]/90';
+            cardBorder = 'border-[#1D5E91]/40 shadow-[0_0_20px_rgba(29,94,145,0.12)]';
+            cardBg = 'from-[#08101C] via-[#050A13] to-[#03060B]';
+            rankColor = 'text-slate-600/50';
+            pointsGlow = 'text-[#C7D3DF]';
             statusLabel = 'THIRD PLACE';
           }
 
@@ -90,14 +90,14 @@ export default function LuxuryLeaderboard({
               key={entry.batch.id}
               onClick={() => onSelectBatch(entry)}
               maxTilt={6}
-              className={`group relative rounded-3xl border ${cardBorder} bg-gradient-to-b ${cardBg} p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 cursor-pointer hover:border-[#E6CA83]/70 hover:shadow-[0_12px_40px_rgba(230,202,131,0.22)]`}
+              className={`group relative rounded-3xl border ${cardBorder} bg-gradient-to-b ${cardBg} p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 cursor-pointer hover:border-[#79C9F2]/70 hover:shadow-[0_12px_40px_rgba(121,201,242,0.25)]`}
             >
               <div>
                 {/* Monolithic Rank Number + Leader Badge */}
                 <div className="flex items-start justify-between mb-5">
                   <div>
                     <span
-                      className={`font-spartan font-black text-6xl sm:text-7xl tracking-tighter leading-none block ${rankColor} group-hover:text-[#E6CA83] transition-colors`}
+                      className={`font-spartan font-black text-6xl sm:text-7xl tracking-tighter leading-none block ${rankColor} group-hover:text-[#79C9F2] transition-colors`}
                     >
                       0{entry.rank}
                     </span>
@@ -107,12 +107,12 @@ export default function LuxuryLeaderboard({
                   </div>
 
                   {isRank1 ? (
-                    <span className="flex items-center space-x-1.5 text-[10px] font-spartan font-black uppercase tracking-widest text-[#E6CA83] px-3 py-1 rounded-full bg-[#302719] border border-[#E6CA83]/60 shadow-glow-gold">
-                      <Sparkles className="w-3.5 h-3.5 text-[#E6CA83]" />
+                    <span className="flex items-center space-x-1.5 text-[10px] font-spartan font-black uppercase tracking-widest text-[#F2F7FC] px-3 py-1 rounded-full bg-[#0B1727] border border-[#79C9F2]/70 shadow-[0_0_15px_rgba(121,201,242,0.35)]">
+                      <Sparkles className="w-3.5 h-3.5 text-[#79C9F2]" />
                       <span>Rank 1</span>
                     </span>
                   ) : (
-                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider group-hover:text-[#E6CA83] flex items-center space-x-1">
+                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider group-hover:text-[#79C9F2] flex items-center space-x-1">
                       <span>Inspect</span>
                       <ExternalLink className="w-3 h-3" />
                     </span>
@@ -120,7 +120,7 @@ export default function LuxuryLeaderboard({
                 </div>
 
                 {/* Cohort Identity (Strictly Batch Codes & Accent Badges - No Mascots) */}
-                <div className="flex items-center space-x-4 mb-6 pb-6 border-b border-[#302719]/60">
+                <div className="flex items-center space-x-4 mb-6 pb-6 border-b border-[#0B1727]">
                   <div
                     className={`relative w-16 h-16 rounded-2xl flex items-center justify-center font-spartan font-black text-xl tracking-wider border shadow-md ${
                       entry.batch.code === 'IPM07'
@@ -136,7 +136,7 @@ export default function LuxuryLeaderboard({
                     <h3 className="text-3xl sm:text-4xl font-spartan font-black uppercase tracking-wider text-white">
                       {entry.batch.code}
                     </h3>
-                    <p className="text-xs font-seasons italic text-[#C6A45A] mt-0.5">
+                    <p className="text-xs font-seasons italic text-[#79C9F2] mt-0.5">
                       Official Tournament Cohort
                     </p>
                   </div>
@@ -144,7 +144,7 @@ export default function LuxuryLeaderboard({
 
                 {/* Score & Match Wins */}
                 <div className="grid grid-cols-2 gap-3 mb-6">
-                  <div className="p-3.5 rounded-2xl bg-black/45 border border-[#302719]">
+                  <div className="p-3.5 rounded-2xl bg-[#03060B]/70 border border-[#0B1727]">
                     <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block mb-1">
                       Official Points
                     </span>
@@ -153,7 +153,7 @@ export default function LuxuryLeaderboard({
                     </span>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-black/45 border border-[#302719]">
+                  <div className="p-3.5 rounded-2xl bg-[#03060B]/70 border border-[#0B1727]">
                     <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block mb-1">
                       Match Wins
                     </span>
@@ -166,12 +166,12 @@ export default function LuxuryLeaderboard({
 
               {/* Sport-wise Breakdown Pills */}
               {sportsList.length > 0 && (
-                <div className="pt-4 border-t border-[#302719]/50">
+                <div className="pt-4 border-t border-[#0B1727]">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
                       Discipline Contributions
                     </span>
-                    <span className="text-[10px] font-mono text-[#C6A45A]">
+                    <span className="text-[10px] font-mono text-[#79C9F2]">
                       Click for all
                     </span>
                   </div>
@@ -179,9 +179,9 @@ export default function LuxuryLeaderboard({
                     {sportsList.slice(0, 5).map(([sport, pts]) => (
                       <span
                         key={sport}
-                        className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-[#13100B] border border-[#302719] text-slate-300"
+                        className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-[#050B16] border border-[#0B1727] text-slate-300"
                       >
-                        {sport.replace(/-/g, ' ')}: <span className="text-[#E6CA83]">+{pts}</span>
+                        {sport.replace(/-/g, ' ')}: <span className="text-[#79C9F2]">+{pts}</span>
                       </span>
                     ))}
                   </div>

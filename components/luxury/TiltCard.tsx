@@ -54,12 +54,12 @@ export default function TiltCard({
       }}
       className={`relative will-change-transform transform-gpu overflow-hidden ${className}`}
     >
-      {/* Glare specular reflection */}
+      {/* Glare specular reflection: Cosmic ice-blue / starlight white sheen */}
       <div
         className="pointer-events-none absolute inset-0 transition-opacity duration-300 z-20"
         style={{
           opacity: tilt.isHovered ? 0.35 : 0,
-          background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(230, 202, 131, 0.22) 0%, transparent 60%)`,
+          background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(121, 201, 242, 0.28) 0%, transparent 60%)`,
         }}
       />
       {children}

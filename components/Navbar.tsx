@@ -20,7 +20,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-40 bg-[#080706]/92 backdrop-blur-md border-b border-[#21180F] w-full">
+    <nav className="sticky top-0 z-40 bg-[#03060B]/94 backdrop-blur-md border-b border-[#0B1727] w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-18">
           {/* Logo Brand: UNBOXED, Prominent Natural Aspect Ratio Crest */}
@@ -28,13 +28,13 @@ export default function Navbar() {
             <img
               src="/assets/branding/athlos_ipm_sports_club_crest.png"
               alt="ATHLOS Official Crest"
-              className="h-10 sm:h-11 w-auto object-contain filter drop-shadow-[0_2px_14px_rgba(227,194,118,0.35)] transition-transform duration-300 group-hover:scale-105"
+              className="h-10 sm:h-11 w-auto object-contain filter drop-shadow-[0_2px_14px_rgba(121,201,242,0.35)] transition-transform duration-300 group-hover:scale-105"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/assets/branding/athlos_logo_primary.png';
               }}
             />
             <div>
-              <span className="font-spartan font-black text-xl sm:text-2xl tracking-[0.18em] uppercase gold-metallic-text">
+              <span className="font-spartan font-black text-xl sm:text-2xl tracking-[0.18em] uppercase cosmic-silver-text">
                 ATHLOS
               </span>
             </div>
@@ -51,11 +51,11 @@ export default function Navbar() {
                   href={link.href}
                   className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-spartan font-bold uppercase tracking-wider transition-all duration-200 ${
                     isActive
-                      ? 'bg-[#21180F] text-[#E3C276] border border-[#C6A45A]/60 shadow-[0_0_18px_rgba(227,194,118,0.2)]'
-                      : 'text-slate-300 hover:text-white hover:bg-[#100D09]'
+                      ? 'bg-[#0B1727] text-[#F2F7FC] border border-[#1D5E91] shadow-[0_0_18px_rgba(121,201,242,0.22)]'
+                      : 'text-slate-300 hover:text-white hover:bg-[#050B16]'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#E3C276]' : 'text-slate-400'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#79C9F2]' : 'text-slate-400'}`} />
                   <span>{link.label}</span>
                 </Link>
               );
@@ -66,10 +66,10 @@ export default function Navbar() {
           <div className="flex md:hidden items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-[#21180F] text-slate-300 hover:text-white border border-[#49351E]"
+              className="p-2 rounded-xl bg-[#0B1727] text-slate-300 hover:text-white border border-[#1D5E91]/60"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5 text-[#E3C276]" /> : <Menu className="w-5 h-5 text-[#E3C276]" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 text-[#79C9F2]" /> : <Menu className="w-5 h-5 text-[#79C9F2]" />}
             </button>
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#100D09] border-b border-[#21180F] px-4 pt-2 pb-4 space-y-1">
+        <div className="md:hidden bg-[#050B16] border-b border-[#0B1727] px-4 pt-2 pb-4 space-y-1">
           {NAV_LINKS.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -88,11 +88,11 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-spartan font-bold uppercase tracking-wider ${
                   isActive
-                    ? 'bg-[#21180F] text-[#E3C276] border border-[#C6A45A]/50'
-                    : 'text-slate-300 hover:text-white hover:bg-[#15110B]'
+                    ? 'bg-[#0B1727] text-[#F2F7FC] border border-[#1D5E91]'
+                    : 'text-slate-300 hover:text-white hover:bg-[#080F1E]'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-[#E3C276]' : 'text-slate-400'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-[#79C9F2]' : 'text-slate-400'}`} />
                 <span>{link.label}</span>
               </Link>
             );

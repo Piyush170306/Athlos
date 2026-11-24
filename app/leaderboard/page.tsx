@@ -30,27 +30,27 @@ export default function LeaderboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
       {/* Header */}
-      <div className="border-b border-amber-500/20 pb-6">
+      <div className="border-b border-[#0B1727] pb-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">
-              <Trophy className="w-4 h-4" />
+            <div className="flex items-center space-x-2 text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#79C9F2] mb-1">
+              <Trophy className="w-4 h-4 text-[#79C9F2]" />
               <span>Official Standings</span>
             </div>
-            <h1 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight">
+            <h1 className="text-3xl sm:text-5xl font-spartan font-black uppercase text-white tracking-wider">
               Tournament Leaderboard
             </h1>
             <p className="text-xs text-slate-400 mt-1 flex items-center space-x-1.5">
-              <ShieldCheck className="w-4 h-4 text-amber-400" />
+              <ShieldCheck className="w-4 h-4 text-[#79C9F2]" />
               <span>Governing Authority: Approved Batch Scores Table (Row 89)</span>
             </p>
           </div>
 
-          <div className="px-5 py-3 rounded-xl bg-[#0e1322] border border-amber-500/30 text-right">
-            <span className="text-[10px] uppercase font-bold text-amber-400/80 block tracking-wider">
+          <div className="px-5 py-3 rounded-xl bg-[#050B16] border border-[#1D5E91]/40 text-right">
+            <span className="text-[10px] uppercase font-bold text-[#79C9F2] block tracking-wider font-mono">
               Active Season
             </span>
-            <span className="text-sm font-extrabold text-white">
+            <span className="text-sm font-extrabold text-white font-spartan">
               {activeSeason.name}
             </span>
           </div>
