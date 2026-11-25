@@ -9,6 +9,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { getActiveSeason, getOfficialLeaderboard } from '@/lib/db/public';
+import { getPointsProgression } from '@/lib/db/pointsHistory';
+import BattleForLeadGraph from '@/components/cosmic/BattleForLeadGraph';
 import { db } from '@/lib/db';
 
 export const revalidate = 0;
@@ -16,6 +18,7 @@ export const revalidate = 0;
 export default function LeaderboardPage() {
   const activeSeason = getActiveSeason();
   const leaderboard = getOfficialLeaderboard(activeSeason.id);
+  const pointsProgression = getPointsProgression(activeSeason.id);
   const sports = db.query('sports', (s) => s.seasonId === activeSeason.id && s.enabled);
   const allMatches = db.query('matches', (m) => m.seasonId === activeSeason.id);
 
@@ -150,6 +153,9 @@ export default function LeaderboardPage() {
           </table>
         </div>
       </div>
+
+      {/* Battle For The Lead: Points Progression Graph (Excel-Connected & Mascot Indicator Pointers) */}
+      <BattleForLeadGraph initialData={pointsProgression} />
 
       {/* Sport-by-Sport Points Breakdown Matrix */}
       <div className="rounded-2xl overflow-hidden border border-surfaceBorder bg-[#0a0e18]">

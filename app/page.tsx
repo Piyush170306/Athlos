@@ -7,7 +7,6 @@ import {
   getPublicAnnouncements,
   getPublicPolls,
 } from '@/lib/db/public';
-import { getPointsProgression } from '@/lib/db/pointsHistory';
 import LuxuryHomeClient from '@/components/luxury/LuxuryHomeClient';
 import { HeadlineItem } from '@/components/luxury/LuxuryHeadlineTicker';
 
@@ -16,7 +15,6 @@ export const revalidate = 0; // Dynamic server rendering for live accuracy
 export default function HomePage() {
   const activeSeason = getActiveSeason();
   const leaderboard = getOfficialLeaderboard(activeSeason.id);
-  const pointsProgression = getPointsProgression(activeSeason.id);
   const matches = getPublicMatches(activeSeason.id);
   const upcomingMatches = matches.filter((m) => m.status === 'UPCOMING').slice(0, 4);
   const completedMatches = matches.filter((m) => m.status === 'COMPLETED').slice(0, 4);
@@ -62,7 +60,6 @@ export default function HomePage() {
   return (
     <LuxuryHomeClient
       leaderboard={leaderboard}
-      pointsProgression={pointsProgression}
       upcomingMatches={upcomingMatches}
       completedMatches={completedMatches}
       highlights={highlights}

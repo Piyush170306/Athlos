@@ -13,10 +13,8 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { LeaderboardEntry } from '@/lib/db/public';
-import { PointsProgressionData } from '@/lib/db/pointsHistory';
 import PollVoteButton from '@/components/PollVoteButton';
 import CinematicEarthHero from '@/components/cosmic/CinematicEarthHero';
-import BattleForLeadGraph from '@/components/cosmic/BattleForLeadGraph';
 import LuxuryHeadlineTicker, { HeadlineItem } from './LuxuryHeadlineTicker';
 import LuxuryLeaderboard from './LuxuryLeaderboard';
 import LeaderboardDetailDrawer from './LeaderboardDetailDrawer';
@@ -24,7 +22,6 @@ import TiltCard from './TiltCard';
 
 interface LuxuryHomeClientProps {
   leaderboard: LeaderboardEntry[];
-  pointsProgression: PointsProgressionData;
   upcomingMatches: any[];
   completedMatches: any[];
   highlights: any[];
@@ -35,7 +32,6 @@ interface LuxuryHomeClientProps {
 
 export default function LuxuryHomeClient({
   leaderboard,
-  pointsProgression,
   upcomingMatches,
   completedMatches,
   highlights,
@@ -45,36 +41,20 @@ export default function LuxuryHomeClient({
 }: LuxuryHomeClientProps) {
   const [selectedBatch, setSelectedBatch] = useState<LeaderboardEntry | null>(null);
 
-  const bannerAnnouncement = announcements.find((a: any) => a.isBanner);
-
   return (
-    <div className="w-full overflow-x-hidden space-y-10 sm:space-y-14 pb-24">
-      {/* 1. Official Bulletin Banner if active */}
-      {bannerAnnouncement && (
-        <div className="bg-gradient-to-r from-[#050B16] via-[#0B1727] to-[#050B16] border-b border-[#1D5E91]/40 px-4 py-2 text-center text-xs">
-          <div className="max-w-7xl mx-auto flex items-center justify-center space-x-2 flex-wrap">
-            <span className="font-spartan font-black text-[#79C9F2] uppercase tracking-widest text-[10px] px-2 py-0.5 rounded bg-black/60 border border-[#1D5E91]/50">
-              Bulletin
-            </span>
-            <span className="font-bold text-[#F2F7FC]">{bannerAnnouncement.title}:</span>
-            <span className="text-slate-300 hidden sm:inline">{bannerAnnouncement.content}</span>
-          </div>
-        </div>
-      )}
-
-      {/* 2. PART 4 — Infinite Moving Ticker Directly Under Main Header */}
+    <div className="w-full overflow-x-hidden pb-24">
+      {/* 1. Infinite Moving Ticker Directly Under Header (Zero Unnecessary Gap) */}
       <LuxuryHeadlineTicker items={headlineItems} speedSeconds={38} />
 
-      {/* 3. Homepage Hero: Cinematic Earth with Physical 3D Typography Ring */}
+      {/* 2. Homepage Hero: Cinematic Earth with Physical 3D Typography Ring */}
       <CinematicEarthHero onExploreClick={() => {}} />
 
-      {/* 4. Official Leaderboard Section */}
-      <LuxuryLeaderboard leaderboard={leaderboard} onSelectBatch={setSelectedBatch} />
+      {/* 3. Main Sections Container */}
+      <div className="space-y-10 sm:space-y-14 mt-6 sm:mt-10">
+        {/* Official Leaderboard Section */}
+        <LuxuryLeaderboard leaderboard={leaderboard} onSelectBatch={setSelectedBatch} />
 
-      {/* 5. PART 5 — New Feature: Excel-Connected Animated Points Progression Graph with Mascot Pointers */}
-      <BattleForLeadGraph initialData={pointsProgression} />
-
-      {/* 5. Scoreboard & Upcoming Fixtures */}
+        {/* Scoreboard & Upcoming Fixtures */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-4 border-b border-[#0B1727] mb-6 gap-3">
           <div>
@@ -261,6 +241,7 @@ export default function LuxuryHomeClient({
           </div>
         </div>
       </section>
+      </div>
 
       {/* 7. Click-Through Detailed Performance Drawer */}
       <LeaderboardDetailDrawer

@@ -23,11 +23,20 @@ export default function BattleForLeadGraph({ initialData }: BattleForLeadGraphPr
   const [isAnimated, setIsAnimated] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Trigger smooth entry animation on mount
+  // Trigger smooth entry animation on mount (respecting prefers-reduced-motion)
   useEffect(() => {
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      setIsAnimated(true);
+      return;
+    }
+
     const timer = setTimeout(() => {
       setIsAnimated(true);
-    }, 120);
+    }, 150);
     return () => clearTimeout(timer);
   }, []);
 
@@ -290,7 +299,12 @@ export default function BattleForLeadGraph({ initialData }: BattleForLeadGraphPr
                       strokeLinejoin="round"
                       opacity={0.35}
                       filter="url(#cosmic-glow)"
-                      className="transition-all duration-700 ease-out"
+                      pathLength="100"
+                      strokeDasharray="100"
+                      strokeDashoffset={isAnimated ? 0 : 100}
+                      style={{
+                        transition: 'stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                      }}
                     />
 
                     {/* Main crisp line */}
@@ -301,7 +315,12 @@ export default function BattleForLeadGraph({ initialData }: BattleForLeadGraphPr
                       strokeWidth="2.8"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="transition-all duration-700 ease-out"
+                      pathLength="100"
+                      strokeDasharray="100"
+                      strokeDashoffset={isAnimated ? 0 : 100}
+                      style={{
+                        transition: 'stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                      }}
                     />
                   </g>
                 );
@@ -313,7 +332,13 @@ export default function BattleForLeadGraph({ initialData }: BattleForLeadGraphPr
                 if (isDimmed) return null;
 
                 return (
-                  <g key={`dots-${batch.code}`}>
+                  <g
+                    key={`dots-${batch.code}`}
+                    style={{
+                      opacity: isAnimated ? 1 : 0,
+                      transition: 'opacity 0.6s ease-out 0.8s',
+                    }}
+                  >
                     {coords.map((c, i) => (
                       <g
                         key={`dot-${batch.code}-${i}`}
@@ -361,8 +386,12 @@ export default function BattleForLeadGraph({ initialData }: BattleForLeadGraphPr
                 return (
                   <g
                     key={`mascot-pointer-${batch.code}`}
-                    className="transition-all duration-700 ease-out pointer-events-none"
+                    className="pointer-events-none"
                     transform={`translate(${px}, ${py})`}
+                    style={{
+                      opacity: isAnimated ? 1 : 0,
+                      transition: 'opacity 0.6s ease-out 1.1s',
+                    }}
                   >
                     {/* Outer radiant pulse glow */}
                     <circle

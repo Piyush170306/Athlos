@@ -150,28 +150,29 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
     container.appendChild(renderer.domElement);
 
     // B. Lighting Setup
-    // Key Sun Light: Radiant light kissing the Earth's curvature (matches Reference Images)
-    const sunLight = new THREE.DirectionalLight(0xfff8ee, 4.0);
-    sunLight.position.set(7.5, 3.5, 6.0);
+    // Key Sun Light: Radiant solar light kissing Earth's curvature (matches Reference Images 1 & 2)
+    const sunLight = new THREE.DirectionalLight(0xfffaee, 4.2);
+    sunLight.position.set(7.2, 3.2, 5.0);
     scene.add(sunLight);
 
-    // Front-Facing Fill Light: Illuminates visible geographical land, oceans, and cloud details across the visible planet
-    const frontFillLight = new THREE.DirectionalLight(0xdbeafe, 2.6);
-    frontFillLight.position.set(2.0, 1.8, 7.5);
+    // Front-Facing Daylight / Earthshine Fill Light:
+    // Natural warm daylight fill that illuminates continents, oceans, and clouds with crisp realism (no murky blue wash)
+    const frontFillLight = new THREE.DirectionalLight(0xfff8ee, 2.8);
+    frontFillLight.position.set(2.5, 1.5, 7.5);
     scene.add(frontFillLight);
 
     // Atmospheric Blue-White Rim Light: Razor-sharp horizon rim glow
-    const atmosphericRimLight = new THREE.DirectionalLight(0x79c9f2, 3.4);
-    atmosphericRimLight.position.set(-3.5, 3.0, -6.5);
+    const atmosphericRimLight = new THREE.DirectionalLight(0x79c9f2, 3.5);
+    atmosphericRimLight.position.set(8.0, 2.5, -2.0);
     scene.add(atmosphericRimLight);
 
-    // Cosmic Midnight Ambient Light (balanced to ensure visible front-facing geographical depth)
-    const ambientLight = new THREE.AmbientLight(0x1a2b42, 1.6);
+    // Cosmic Midnight Ambient Light (calibrated to preserve deep space blacks while keeping geographical features visible)
+    const ambientLight = new THREE.AmbientLight(0x0c1420, 0.85);
     scene.add(ambientLight);
 
-    // Shimmering Ice-Blue Point Light: Catches metallic silver typography in front
-    const silverRingPointLight = new THREE.PointLight(0x79c9f2, 3.2, 16);
-    silverRingPointLight.position.set(2.5, 1.8, 6.0);
+    // Shimmering Ice-Blue/Silver Point Light: Catches metallic silver typography in front
+    const silverRingPointLight = new THREE.PointLight(0xe2f0ff, 3.8, 18);
+    silverRingPointLight.position.set(3.0, 2.0, 6.5);
     scene.add(silverRingPointLight);
 
     // C. Deep Cosmic Starfield (Deep Space Black with Ice Blue and Starlight White stars)
@@ -277,12 +278,15 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
     const earthGeo = new THREE.SphereGeometry(3.55, 64, 64);
     const earthMat = new THREE.MeshStandardMaterial({
       map: fallbackTexture,
-      roughness: 0.38,
-      metalness: 0.14,
+      roughness: 0.42,
+      metalness: 0.10,
     });
     const earthSphere = new THREE.Mesh(earthGeo, earthMat);
-    // Earth axial tilt (~23.5 degrees)
+    // Earth axial tilt (~23.5 degrees) & calibrated starting rotation
+    // Rotation Y calibrated (2.45 rad) to bring Europe, Africa, Mediterranean, and Asian continents
+    // with glowing golden city networks directly onto the visible front-left hemisphere
     earthSphere.rotation.z = -0.41;
+    earthSphere.rotation.y = 2.45;
     earthGroup.add(earthSphere);
 
     // Realistic Clouds Layer (Subtle, rotating independently for depth)
@@ -320,6 +324,7 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
     });
     const cloudSphere = new THREE.Mesh(cloudGeo, cloudMat);
     cloudSphere.rotation.z = -0.38;
+    cloudSphere.rotation.y = 2.30;
     earthGroup.add(cloudSphere);
 
     // Load authentic NASA 2048x1024 textures downloaded in public assets
@@ -339,8 +344,8 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
       (lightsTex) => {
         lightsTex.colorSpace = THREE.SRGBColorSpace;
         earthMat.emissiveMap = lightsTex;
-        earthMat.emissive = new THREE.Color(0xe9b96d); // Restrained amber city lights (#E9B96D)
-        earthMat.emissiveIntensity = 3.2; // Radiant, luminous city lights
+        earthMat.emissive = new THREE.Color(0xf6c56f); // Brilliant golden amber city lights (#F6C56F) matching Reference 1 & 2
+        earthMat.emissiveIntensity = 3.6; // Radiant, luminous city lights
         earthMat.needsUpdate = true;
       },
       undefined,
@@ -351,7 +356,7 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
       '/assets/branding/earth_normal_2048.jpg',
       (normalTex) => {
         earthMat.normalMap = normalTex;
-        earthMat.normalScale = new THREE.Vector2(1.1, 1.1);
+        earthMat.normalScale = new THREE.Vector2(1.2, 1.2);
         earthMat.needsUpdate = true;
       },
       undefined,
@@ -359,7 +364,7 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
     );
 
     // F. Photorealistic Blue-White Atmospheric Horizon Rim (From Reference Images 1 & 2)
-    // Custom Fresnel Shader for crisp, cinematic atmospheric limb glow
+    // Custom Fresnel Shader for razor-sharp, cinematic atmospheric limb glow concentrated strictly along the curvature edge
     const atmosphereVertexShader = `
       varying vec3 vNormal;
       varying vec3 vPosition;
@@ -376,18 +381,22 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
       void main() {
         vec3 viewDir = normalize(-vPosition);
         float dotProduct = max(dot(vNormal, viewDir), 0.0);
-        float fresnel = pow(1.0 - dotProduct, 2.5);
-        float surfaceScatter = pow(dotProduct, 1.6) * 0.16; // Soft natural atmospheric light across visible surface
+        // Fresnel concentrated sharply at the glancing rim (Reference Images 1 & 2)
+        float fresnel = pow(1.0 - dotProduct, 2.8);
         
-        // Ethereal ice-blue atmospheric rim blending into brilliant starlight white crest
-        vec3 deepBlue = vec3(0.11, 0.37, 0.57);    // #1D5E91
-        vec3 iceBlueRim = vec3(0.47, 0.79, 0.95);   // #79C9F2
-        vec3 starlightWhite = vec3(0.95, 0.97, 1.0); // #F2F7FC
+        // Brilliant electric-blue rim blending into bright starlight-white crest
+        vec3 deepBlue = vec3(0.08, 0.32, 0.54);      // Deep atmospheric blue
+        vec3 electricRim = vec3(0.47, 0.79, 0.95);   // #79C9F2 ice blue
+        vec3 whiteCrest = vec3(0.96, 0.98, 1.0);     // #F2F7FC starlight white
         
-        vec3 rimCol = mix(deepBlue, iceBlueRim, smoothstep(0.0, 0.7, fresnel));
-        rimCol = mix(rimCol, starlightWhite, pow(fresnel, 2.6));
+        vec3 rimCol = mix(deepBlue, electricRim, smoothstep(0.0, 0.7, fresnel));
+        rimCol = mix(rimCol, whiteCrest, pow(fresnel, 2.5));
         
-        gl_FragColor = vec4(rimCol, fresnel * 0.96 + surfaceScatter);
+        // Concentrated along horizon limb, falling off completely over visible front surface
+        // Eliminates any flat murky blue wash
+        float alpha = pow(fresnel, 1.8) * 0.95;
+        
+        gl_FragColor = vec4(rimCol, alpha);
       }
     `;
 
@@ -402,18 +411,6 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
     const atmosphereMesh = new THREE.Mesh(atmosphereGeo, atmosphereMat);
     earthGroup.add(atmosphereMesh);
 
-    // Outer soft volumetric haze / corona
-    const outerHazeGeo = new THREE.SphereGeometry(3.72, 32, 32);
-    const outerHazeMat = new THREE.MeshBasicMaterial({
-      color: 0x79c9f2,
-      transparent: true,
-      opacity: 0.10,
-      side: THREE.BackSide,
-      blending: THREE.AdditiveBlending,
-    });
-    const outerHazeMesh = new THREE.Mesh(outerHazeGeo, outerHazeMat);
-    earthGroup.add(outerHazeMesh);
-
     scene.add(earthGroup);
 
     // G. The Physical 3D Typography Ring (ATHLOS WAR OF BATCHES 2026-27)
@@ -425,11 +422,11 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
     ringParent.rotation.set(baseTiltX, baseTiltY, baseTiltZ);
     earthGroup.add(ringParent);
 
-    // Material: Premium Metallic Silver (#C7D3DF) with sharp specular highlights
+    // Material: Premium Metallic Silver (#E2EBF5) with sharp specular highlights
     const silverRingMaterial = new THREE.MeshStandardMaterial({
-      color: 0xc7d3df,
-      metalness: 0.94,
-      roughness: 0.16,
+      color: 0xe2ebf5,
+      metalness: 0.92,
+      roughness: 0.14,
     });
 
     let ringRotGroup: THREE.Group | null = null;
@@ -456,7 +453,8 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
           // Skip whitespace or any glyph not explicitly defined in the typeface to eliminate any fallback '?'
           if (char === ' ' || !font.data.glyphs[char]) return;
 
-          const angle = i * angleStep;
+          // Angle parameterization ensures words read naturally from LEFT to RIGHT across the visible front
+          const angle = -i * angleStep;
 
           // Extruded 3D Text Geometry: Enlarge size by +37% (0.52 vs 0.38) and depth (0.20 vs 0.14)
           const letterGeo = new TextGeometry(char, {
@@ -481,13 +479,13 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
 
           const letterMesh = new THREE.Mesh(letterGeo, silverRingMaterial);
 
-          // Position letter along the circular orbit
+          // Position letter along circular orbit
           letterMesh.position.x = orbitRadius * Math.cos(angle);
           letterMesh.position.z = orbitRadius * Math.sin(angle);
           letterMesh.position.y = 0;
 
-          // Tangent orientation: letter faces radially outward, following the curve
-          letterMesh.rotation.y = -angle + Math.PI / 2;
+          // Tangent orientation: Letter front face points radially outward, upright, reading left-to-right
+          letterMesh.rotation.y = Math.PI / 2 - angle;
 
           ringRotGroup!.add(letterMesh);
         });
@@ -631,16 +629,16 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
         camera.position.y = -mouseY * 0.28;
         camera.lookAt(0, 0, 0);
 
-        // Independent, smoother Earth rotation around its axis
-        earthSphere.rotation.y += 0.024 * delta;
+        // Majestic Earth axial rotation
+        earthSphere.rotation.y += 0.018 * delta;
 
-        // Cloud layer drifts smoothly for realistic atmospheric movement
-        cloudSphere.rotation.y += 0.038 * delta;
+        // Cloud layer drifts smoothly for atmospheric movement
+        cloudSphere.rotation.y += 0.028 * delta;
 
         // Continuous orbital traveling motion of the 3D typography ring
-        // Reversed direction (+=) at a substantially reduced, slow, majestic speed
+        // Reversed orbital direction (-=) at smooth, noticeable cinematic speed (0.11 * delta)
         if (ringRotGroup) {
-          ringRotGroup.rotation.y += 0.055 * delta;
+          ringRotGroup.rotation.y -= 0.11 * delta;
         }
 
         // Subtle stellar background drift
@@ -671,8 +669,6 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
       cloudTex.dispose();
       atmosphereGeo.dispose();
       atmosphereMat.dispose();
-      outerHazeGeo.dispose();
-      outerHazeMat.dispose();
       fallbackTexture.dispose();
 
       if (container && renderer.domElement.parentElement === container) {
