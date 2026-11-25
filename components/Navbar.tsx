@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shield, Trophy, Calendar, BookOpen, Flame, BarChart2, History, Menu, X } from 'lucide-react';
+import { Shield, Trophy, Calendar, BookOpen, Flame, BarChart2, History, Users, Menu, X } from 'lucide-react';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home', icon: Shield },
@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { href: '/sports', label: 'Rules', icon: BookOpen },
   { href: '/highlights', label: 'Highlights', icon: Flame },
   { href: '/polls', label: 'Predictions', icon: BarChart2 },
+  { href: '/team', label: 'Team', icon: Users },
   { href: '/history', label: 'Past Seasons', icon: History },
 ];
 
