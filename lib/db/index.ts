@@ -538,9 +538,19 @@ class Database {
     // 1. Check if an updated writable copy exists in /tmp (handles serverless updates)
     if (fs.existsSync(TMP_DB_FILE)) {
       try {
-        const content = fs.readFileSync(TMP_DB_FILE, 'utf-8');
-        this.inMemoryData = JSON.parse(content);
-        return this.inMemoryData!;
+        let preferBundled = false;
+        if (fs.existsSync(BUNDLED_DB_FILE)) {
+          const tmpMtime = fs.statSync(TMP_DB_FILE).mtimeMs;
+          const bundledMtime = fs.statSync(BUNDLED_DB_FILE).mtimeMs;
+          if (bundledMtime > tmpMtime) {
+            preferBundled = true;
+          }
+        }
+        if (!preferBundled) {
+          const content = fs.readFileSync(TMP_DB_FILE, 'utf-8');
+          this.inMemoryData = JSON.parse(content);
+          return this.inMemoryData!;
+        }
       } catch (err) {
         console.warn('Failed to parse /tmp database file, falling back to bundled data:', err);
       }

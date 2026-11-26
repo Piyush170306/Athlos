@@ -3,6 +3,8 @@ import { revalidatePath } from 'next/cache';
 import { verifyAdminSessionToken } from '@/lib/auth';
 import { rollbackImportBatch } from '@/lib/importer/approval';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   const token = req.cookies.get('athlos_admin_session')?.value;
   const verified = verifyAdminSessionToken(token || '');
