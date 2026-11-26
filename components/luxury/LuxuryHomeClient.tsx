@@ -215,26 +215,36 @@ export default function LuxuryHomeClient({
             </Link>
           </div>
 
-          <div className="space-y-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {highlights.map((hl: any) => (
               <div
                 key={hl.id}
-                className="rounded-2xl p-4.5 border border-[#1D5E91]/40 hover:border-[#79C9F2]/60 transition-all bg-gradient-to-b from-[#0B1727] to-[#050B16] flex flex-col justify-between shadow-sm"
+                className="rounded-2xl p-5 sm:p-6 border border-[#1D5E91]/40 hover:border-[#79C9F2]/70 transition-all duration-300 bg-gradient-to-b from-[#0B1727] to-[#050B16] flex flex-col justify-between shadow-md hover:shadow-[0_8px_30px_rgba(121,201,242,0.15)] group min-h-[170px]"
               >
                 <div>
-                  <div className="flex items-center space-x-2 text-[11px] text-slate-400 mb-1.5">
+                  {/* Metadata Header with Consistent Alignment */}
+                  <div className="flex items-center flex-wrap gap-2 text-[11px] text-slate-400 mb-3 pb-2 border-b border-[#1D5E91]/25">
                     {hl.isPinned && (
-                      <span className="px-2 py-0.5 rounded bg-[#0B1727] text-[#79C9F2] border border-[#1D5E91] font-mono font-bold uppercase text-[10px]">
+                      <span className="px-2.5 py-0.5 rounded-md bg-[#050B16] text-[#79C9F2] border border-[#1D5E91] font-mono font-bold uppercase text-[10px] tracking-wider shadow-sm">
                         Pinned
                       </span>
                     )}
-                    <span className="text-[#79C9F2] font-mono font-semibold">
+                    <span className="text-[#C7D3DF] font-mono font-semibold">
                       {new Date(hl.publishedAt).toLocaleDateString('en-GB')}
                     </span>
-                    <span>• {hl.author}</span>
+                    <span className="text-slate-600">•</span>
+                    <span className="text-slate-400 text-xs">{hl.author}</span>
                   </div>
-                  <h4 className="text-base font-spartan font-bold text-white mb-1">{hl.title}</h4>
-                  <p className="text-xs text-slate-300 leading-relaxed font-manrope">{hl.content}</p>
+
+                  {/* Heading with Balanced Typography */}
+                  <h4 className="text-sm sm:text-base font-spartan font-bold text-white mb-2 leading-snug group-hover:text-[#79C9F2] transition-colors">
+                    {hl.title}
+                  </h4>
+
+                  {/* Description with Comfortable Line Height */}
+                  <p className="text-xs text-slate-300 leading-relaxed font-manrope">
+                    {hl.content}
+                  </p>
                 </div>
               </div>
             ))}

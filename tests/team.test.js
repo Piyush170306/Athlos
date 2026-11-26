@@ -149,3 +149,22 @@ test('Team Parser: Flags ambiguous duplicates and missing slots as required by R
   // Check that index 6 is missing in the uploaded folder
   assert.ok(!jOrders.includes(6), 'Index 6 must be flagged as missing from current uploaded files');
 });
+
+test('Team Parser: Junior team is arranged alphabetically A-Z by first name', () => {
+  const teamDir = path.join(process.cwd(), 'public', 'assets', 'team');
+  const files = fs.readdirSync(teamDir);
+  const parsedMembers = files.map(parseTeamFilename).filter((p) => p.type === 'member').map((p) => p.member);
+
+  const junior = parsedMembers.filter((m) => m.team === 'Junior Team');
+  junior.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+
+  const sortedNames = junior.map((m) => m.name);
+  assert.deepStrictEqual(sortedNames, [
+    'Aditya S',
+    'Aekanth Arul',
+    'Harvansh Chaube',
+    'Piyush Mahajan',
+    'Renita Singh',
+    'Shaurya',
+  ]);
+});

@@ -43,10 +43,6 @@ export default function MeetTheTeamClient({ initialData }: MeetTheTeamClientProp
               <h1 className="text-4xl sm:text-6xl font-spartan font-black uppercase tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
                 MEET THE TEAM
               </h1>
-
-              <p className="text-sm sm:text-base text-[#C7D3DF] font-seasons italic mt-2 max-w-2xl">
-                The student leadership, core coordinators, and operational force behind War of Batches 2026–27.
-              </p>
             </div>
 
             {/* Structure Summary Pill */}

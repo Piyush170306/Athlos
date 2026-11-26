@@ -60,7 +60,10 @@ export default function LeaderboardPage() {
         </div>
       </div>
 
-      {/* Primary Standings Table */}
+      {/* 1. Battle For The Lead: Points Progression Graph (Excel-Connected & Mascot Indicator Pointers) */}
+      <BattleForLeadGraph initialData={pointsProgression} />
+
+      {/* 2. Primary Standings Table */}
       <div className="rounded-2xl overflow-hidden border border-amber-500/30 bg-[#0a0e18] shadow-2xl">
         <div className="p-4 sm:p-6 bg-[#0f1524] border-b border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <h2 className="text-lg font-black uppercase text-white tracking-wider flex items-center space-x-2">
@@ -153,9 +156,6 @@ export default function LeaderboardPage() {
           </table>
         </div>
       </div>
-
-      {/* Battle For The Lead: Points Progression Graph (Excel-Connected & Mascot Indicator Pointers) */}
-      <BattleForLeadGraph initialData={pointsProgression} />
 
       {/* Sport-by-Sport Points Breakdown Matrix */}
       <div className="rounded-2xl overflow-hidden border border-surfaceBorder bg-[#0a0e18]">

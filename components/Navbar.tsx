@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shield, Trophy, Calendar, BookOpen, Flame, BarChart2, History, Users, Menu, X } from 'lucide-react';
+import { Shield, Trophy, Calendar, BookOpen, Flame, BarChart2, History, Users, Instagram, Menu, X } from 'lucide-react';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home', icon: Shield },
@@ -13,6 +13,12 @@ const NAV_LINKS = [
   { href: '/highlights', label: 'Highlights', icon: Flame },
   { href: '/polls', label: 'Predictions', icon: BarChart2 },
   { href: '/team', label: 'Team', icon: Users },
+  {
+    href: 'https://www.instagram.com/ipmsports.club?evlk=MXJqdjNzNGk4NTRlOA==',
+    label: 'Social',
+    icon: Instagram,
+    isExternal: true,
+  },
   { href: '/history', label: 'Past Seasons', icon: History },
 ];
 
@@ -46,15 +52,33 @@ export default function Navbar() {
             {NAV_LINKS.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
+              const linkClasses = `flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-spartan font-bold uppercase tracking-wider transition-all duration-200 ${
+                isActive
+                  ? 'bg-[#0B1727] text-[#F2F7FC] border border-[#1D5E91] shadow-[0_0_18px_rgba(121,201,242,0.22)]'
+                  : 'text-slate-300 hover:text-white hover:bg-[#050B16]'
+              }`;
+
+              if (link.isExternal) {
+                return (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={linkClasses}
+                    title="Official ATHLOS Instagram Profile"
+                  >
+                    <Icon className="w-3.5 h-3.5 text-slate-400 hover:text-[#79C9F2]" />
+                    <span>{link.label}</span>
+                  </a>
+                );
+              }
+
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-spartan font-bold uppercase tracking-wider transition-all duration-200 ${
-                    isActive
-                      ? 'bg-[#0B1727] text-[#F2F7FC] border border-[#1D5E91] shadow-[0_0_18px_rgba(121,201,242,0.22)]'
-                      : 'text-slate-300 hover:text-white hover:bg-[#050B16]'
-                  }`}
+                  className={linkClasses}
                 >
                   <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#79C9F2]' : 'text-slate-400'}`} />
                   <span>{link.label}</span>
@@ -82,16 +106,34 @@ export default function Navbar() {
           {NAV_LINKS.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
+            const linkClasses = `flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-spartan font-bold uppercase tracking-wider ${
+              isActive
+                ? 'bg-[#0B1727] text-[#F2F7FC] border border-[#1D5E91]'
+                : 'text-slate-300 hover:text-white hover:bg-[#080F1E]'
+            }`;
+
+            if (link.isExternal) {
+              return (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={linkClasses}
+                >
+                  <Icon className="w-4 h-4 text-slate-400" />
+                  <span>{link.label}</span>
+                </a>
+              );
+            }
+
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-spartan font-bold uppercase tracking-wider ${
-                  isActive
-                    ? 'bg-[#0B1727] text-[#F2F7FC] border border-[#1D5E91]'
-                    : 'text-slate-300 hover:text-white hover:bg-[#080F1E]'
-                }`}
+                className={linkClasses}
               >
                 <Icon className={`w-4 h-4 ${isActive ? 'text-[#79C9F2]' : 'text-slate-400'}`} />
                 <span>{link.label}</span>

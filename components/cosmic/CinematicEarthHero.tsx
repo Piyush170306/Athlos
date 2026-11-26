@@ -170,10 +170,20 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
     const ambientLight = new THREE.AmbientLight(0x0c1420, 0.85);
     scene.add(ambientLight);
 
-    // Shimmering Ice-Blue/Silver Point Light: Catches metallic silver typography in front
-    const silverRingPointLight = new THREE.PointLight(0xe2f0ff, 3.8, 18);
-    silverRingPointLight.position.set(3.0, 2.0, 6.5);
+    // Key Top-Front Directional Light directly illuminating the typography ring
+    const ringKeyLight = new THREE.DirectionalLight(0xffffff, 4.8);
+    ringKeyLight.position.set(3.5, 3.2, 7.0);
+    scene.add(ringKeyLight);
+
+    // Luminous Ice-Blue Fill Point Light catching the ring's extruded bevel edges
+    const silverRingPointLight = new THREE.PointLight(0xa5d8ff, 4.6, 22);
+    silverRingPointLight.position.set(2.8, 1.8, 6.8);
     scene.add(silverRingPointLight);
+
+    // Subtle lower specular kicker light catching bottom bevels
+    const ringKickerLight = new THREE.PointLight(0x79c9f2, 3.2, 18);
+    ringKickerLight.position.set(5.5, -2.2, 5.8);
+    scene.add(ringKickerLight);
 
     // C. Deep Cosmic Starfield (Deep Space Black with Ice Blue and Starlight White stars)
     const starCount = 340;
@@ -422,11 +432,15 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
     ringParent.rotation.set(baseTiltX, baseTiltY, baseTiltZ);
     earthGroup.add(ringParent);
 
-    // Material: Premium Metallic Silver (#E2EBF5) with sharp specular highlights
+    // Material: Premium Luminous Metallic Silver / Ice-Blue with bright white highlights
+    // Calibrated metalness (0.58), high specular gloss, and luminous ice-blue emissive radiance
+    // ensures the letters radiate bright highlights and never appear dark against space or Earth
     const silverRingMaterial = new THREE.MeshStandardMaterial({
-      color: 0xe2ebf5,
-      metalness: 0.92,
-      roughness: 0.14,
+      color: 0xf5f9ff,
+      metalness: 0.58,
+      roughness: 0.12,
+      emissive: 0x5a8bb8,
+      emissiveIntensity: 0.42,
     });
 
     let ringRotGroup: THREE.Group | null = null;
@@ -463,8 +477,8 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
             depth: 0.20, // Increased thickness / extrusion depth
             curveSegments: 5,
             bevelEnabled: true,
-            bevelThickness: 0.035,
-            bevelSize: 0.02,
+            bevelThickness: 0.045,
+            bevelSize: 0.024,
             bevelOffset: 0,
             bevelSegments: 2,
           });
@@ -732,14 +746,8 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
             </h1>
           </div>
 
-          {/* Drag Hint / Interactive indicator */}
-          <div className="flex items-center space-x-2 text-[11px] font-mono uppercase tracking-widest text-[#79C9F2]/75">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#79C9F2]" />
-            <span>Interactive 3D Orbit: Drag planet to rotate • Reversed Orbit</span>
-          </div>
-
           {/* Interactive Navigation Actions */}
-          <div className="pt-2 flex flex-wrap items-center gap-3.5">
+          <div className="pt-4 sm:pt-5 flex flex-wrap items-center gap-3.5">
             <button
               onClick={() => {
                 const el = document.getElementById('leaderboard-section');

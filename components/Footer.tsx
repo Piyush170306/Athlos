@@ -1,14 +1,23 @@
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Clock } from 'lucide-react';
+import { ShieldCheck, Clock, Phone } from 'lucide-react';
+
+const CONTACT_POCS = [
+  { name: 'Piyush Mahajan', phone: '7030797111', tel: 'tel:7030797111' },
+  { name: 'Aekanth Arul', phone: '+91 97877 73313', tel: 'tel:+919787773313' },
+  { name: 'Renita Singh', phone: '+91 83688 80401', tel: 'tel:+918368880401' },
+  { name: 'Harvansh Chaube', phone: '+91 70607 70482', tel: 'tel:+917060770482' },
+  { name: 'Aditya S', phone: '+91 80726 71766', tel: 'tel:+918072671766' },
+  { name: 'Shaurya Baid', phone: '+91 79951 71413', tel: 'tel:+917995171413' },
+];
 
 export default function Footer() {
   return (
     <footer className="bg-[#03060B] border-t border-[#0B1727] mt-20 text-slate-400 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
           {/* Tournament Overview */}
-          <div className="md:col-span-2 space-y-3">
+          <div className="sm:col-span-2 lg:col-span-2 space-y-3">
             <div className="flex items-center space-x-2">
               <span className="font-spartan font-black text-base tracking-wider uppercase cosmic-silver-text">
                 ATHLOS
@@ -89,6 +98,29 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
+          </div>
+
+          {/* Contact POC Column */}
+          <div>
+            <h4 className="text-slate-200 font-spartan font-bold uppercase tracking-wider text-xs mb-3">
+              Contact POC
+            </h4>
+            <div className="space-y-2.5 font-manrope">
+              {CONTACT_POCS.map((poc) => (
+                <div key={poc.name} className="space-y-0.5">
+                  <span className="block font-spartan font-bold text-slate-200 text-xs tracking-wide">
+                    {poc.name}
+                  </span>
+                  <a
+                    href={poc.tel}
+                    className="inline-flex items-center space-x-1.5 text-[#79C9F2] hover:text-[#F2F7FC] transition font-mono text-[11px]"
+                  >
+                    <Phone className="w-3 h-3 text-[#79C9F2] flex-shrink-0" />
+                    <span>{poc.phone}</span>
+                  </a>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

@@ -191,8 +191,21 @@ export function getTeamData(): TeamData {
     }
   };
 
+  // Senior Team: Preserves numerical order 01 to 04
   checkDuplicatesAndOrder(seniorMembers, 'Senior Team', 4);
-  checkDuplicatesAndOrder(juniorMembers, 'Junior Team', 6);
+
+  // Junior Team: Sorted alphabetically by first name (case-insensitive A to Z) as required by Part 6
+  juniorMembers.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+  juniorMembers.forEach((m, idx) => {
+    m.order = idx + 1;
+    m.isAmbiguous = false;
+  });
+
+  if (juniorMembers.length < 6) {
+    ambiguities.push(
+      `Junior Team currently has ${juniorMembers.length} members loaded, but the fixed structure expects 6 members.`
+    );
+  }
 
   return {
     fullTeamPhoto,

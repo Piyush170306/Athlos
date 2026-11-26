@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FastForward, Volume2, VolumeX } from 'lucide-react';
+import { FastForward, Volume2, VolumeX, Sparkles } from 'lucide-react';
 
 export default function BrandedIntro() {
   const [showIntro, setShowIntro] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -16,14 +17,49 @@ export default function BrandedIntro() {
       return; // Skip intro entirely if user prefers reduced motion
     }
 
-    // 2. Check if already played in this browser session
+    // 2. Check if already played in this browser session (prevents replay on internal navigation)
     const hasPlayed = sessionStorage.getItem('athlos_intro_played');
     if (hasPlayed) {
       return;
     }
 
+    // 3. Read persistent sound preference (unmuted by default unless explicitly muted previously)
+    const storedPref = localStorage.getItem('athlos_sound_pref');
+    const shouldMute = storedPref === 'muted';
+    setIsMuted(shouldMute);
+
     setShowIntro(true);
   }, []);
+
+  // Attempt autoplay with sound enabled at 70% volume by default
+  useEffect(() => {
+    if (!showIntro) return;
+
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.volume = 0.7; // Initial volume set to 70% as required
+
+    const storedPref = localStorage.getItem('athlos_sound_pref');
+    const shouldMute = storedPref === 'muted';
+
+    if (shouldMute) {
+      video.muted = true;
+      video.play().catch(() => {});
+    } else {
+      video.muted = false;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Browser blocked unmuted autoplay: fall back to muted playback and show the prompt
+          video.muted = true;
+          video.play().catch(() => {});
+          setIsMuted(true);
+          setAutoplayBlocked(true);
+        });
+      }
+    }
+  }, [showIntro]);
 
   const handleComplete = () => {
     if (isFadingOut) return;
@@ -34,11 +70,28 @@ export default function BrandedIntro() {
     }, 500);
   };
 
-  const toggleMute = () => {
+  const enableSound = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.volume = 0.7;
+      setIsMuted(false);
+      setAutoplayBlocked(false);
+      localStorage.setItem('athlos_sound_pref', 'unmuted');
+    }
+  };
+
+  const toggleMute = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (videoRef.current) {
       const nextMuted = !videoRef.current.muted;
       videoRef.current.muted = nextMuted;
+      if (!nextMuted) {
+        videoRef.current.volume = 0.7;
+        setAutoplayBlocked(false);
+      }
       setIsMuted(nextMuted);
+      localStorage.setItem('athlos_sound_pref', nextMuted ? 'muted' : 'unmuted');
     }
   };
 
@@ -62,6 +115,9 @@ export default function BrandedIntro() {
     <div
       role="dialog"
       aria-label="ATHLOS War of Batches Tournament Intro Video"
+      onClick={() => {
+        if (autoplayBlocked) enableSound();
+      }}
       className={`fixed inset-0 z-[100] flex items-center justify-center bg-black overflow-hidden transition-opacity duration-500 ${
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
@@ -71,13 +127,28 @@ export default function BrandedIntro() {
         <video
           ref={videoRef}
           src="/assets/videos/athlos_war_of_batches_intro_2026-27.mp4"
-          autoPlay
-          muted
           playsInline
           onEnded={handleComplete}
           onError={handleComplete}
           className="w-full h-full object-contain max-h-screen"
         />
+
+        {/* Floating "ENABLE SOUND" Prompt when browser blocks unmuted autoplay */}
+        {autoplayBlocked && (
+          <div className="absolute bottom-16 sm:bottom-20 z-50 flex flex-col items-center animate-in fade-in zoom-in-95 duration-300">
+            <button
+              onClick={enableSound}
+              aria-label="Enable intro sound"
+              className="group flex items-center space-x-2.5 px-6 py-3 rounded-full bg-black/85 hover:bg-black border-2 border-amber-400 text-amber-300 hover:text-white text-xs sm:text-sm font-spartan font-black uppercase tracking-wider backdrop-blur-xl transition-all shadow-[0_0_25px_rgba(245,158,11,0.5)] hover:shadow-[0_0_35px_rgba(245,158,11,0.7)] hover:scale-105"
+            >
+              <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 group-hover:scale-110 transition-transform" />
+              <span>ENABLE SOUND</span>
+            </button>
+            <span className="text-[10px] text-slate-400 font-mono mt-2 tracking-wide">
+              Browser muted autoplay • Tap anywhere to unmute
+            </span>
+          </div>
+        )}
 
         {/* Top-Right Control Buttons */}
         <div className="absolute top-6 right-6 z-50 flex items-center space-x-3">
@@ -85,7 +156,7 @@ export default function BrandedIntro() {
           <button
             onClick={toggleMute}
             aria-label={isMuted ? 'Unmute video' : 'Mute video'}
-            className="p-2.5 rounded-full bg-black/60 hover:bg-black/90 border border-amber-500/30 text-amber-400 backdrop-blur-md transition hover:scale-105"
+            className="p-2.5 rounded-full bg-black/60 hover:bg-black/90 border border-amber-500/30 text-amber-400 backdrop-blur-md transition hover:scale-105 shadow-md"
           >
             {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
