@@ -9,6 +9,8 @@ function checkAuth(req: NextRequest) {
   return verified.valid ? verified.user : null;
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   const user = checkAuth(req);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -20,11 +22,24 @@ export async function GET(req: NextRequest) {
     isActive: false,
   };
 
+  const storageEnvKeys = Object.keys(process.env).filter(
+    (k) =>
+      k.includes('DATABASE') ||
+      k.includes('POSTGRES') ||
+      k.includes('SUPABASE') ||
+      k.includes('KV_') ||
+      k.includes('BLOB') ||
+      k.includes('REDIS') ||
+      k.includes('STORAGE') ||
+      k.includes('GIT')
+  );
+
   return NextResponse.json({
     appName: process.env.NEXT_PUBLIC_APP_NAME || 'ATHLOS War of Batches 2026–27',
     timezone: process.env.TOURNAMENT_TIMEZONE || 'Asia/Kolkata',
     allowedEmails: (process.env.ADMIN_ALLOWED_EMAILS || 'admin@athlos.edu,sports@athlos.edu').split(','),
     googleSheets: gSheetsConfig,
+    storageEnvKeys,
   });
 }
 
