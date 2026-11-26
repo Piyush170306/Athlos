@@ -342,15 +342,31 @@ matches.forEach((m) => {
   }
 });
 
-// Official scores (Authoritative Row 89: IPM06: 14, IPM07: 30, IPM08: 10)
+// Dynamic extraction of Row 89 totals from Batch Scores Table
+let officialTotals = { IPM06: 38.0, IPM07: 52.0, IPM08: 26.0 };
+for (let r = 2; r < rows.length; r++) {
+  const row = rows[r];
+  if (!row) continue;
+  if (String(row[7] || '').trim().toLowerCase() === 'total') {
+    const p06 = parseFloat(row[8]);
+    const p07 = parseFloat(row[9]);
+    const p08 = parseFloat(row[10]);
+    if (!isNaN(p06)) officialTotals.IPM06 = p06;
+    if (!isNaN(p07)) officialTotals.IPM07 = p07;
+    if (!isNaN(p08)) officialTotals.IPM08 = p08;
+    break;
+  }
+}
+
+// Official scores (Authoritative Row 89: IPM07: 52, IPM06: 38, IPM08: 26)
 const officialScores2026 = [
   {
     id: 'obs-2026-b07',
     seasonId: s2026.id,
     batchId: b07.id,
     batchCode: 'IPM07',
-    totalPoints: 30.0,
-    wins: winsMap[b07.id] || 15,
+    totalPoints: officialTotals.IPM07,
+    wins: winsMap[b07.id] !== undefined ? winsMap[b07.id] : 26,
     rank: 1,
     tieBroken: false,
     breakdownBySport: sportBreakdowns.IPM07,
@@ -364,8 +380,8 @@ const officialScores2026 = [
     seasonId: s2026.id,
     batchId: b06.id,
     batchCode: 'IPM06',
-    totalPoints: 14.0,
-    wins: winsMap[b06.id] || 7,
+    totalPoints: officialTotals.IPM06,
+    wins: winsMap[b06.id] !== undefined ? winsMap[b06.id] : 19,
     rank: 2,
     tieBroken: false,
     breakdownBySport: sportBreakdowns.IPM06,
@@ -379,8 +395,8 @@ const officialScores2026 = [
     seasonId: s2026.id,
     batchId: b08.id,
     batchCode: 'IPM08',
-    totalPoints: 10.0,
-    wins: winsMap[b08.id] || 5,
+    totalPoints: officialTotals.IPM08,
+    wins: winsMap[b08.id] !== undefined ? winsMap[b08.id] : 13,
     rank: 3,
     tieBroken: false,
     breakdownBySport: sportBreakdowns.IPM08,

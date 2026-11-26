@@ -11,7 +11,13 @@ export async function GET(req: NextRequest) {
     const seasonId = searchParams.get('seasonId') || getActiveSeason().id;
     const progression = getPointsProgression(seasonId);
 
-    return NextResponse.json(progression);
+    return NextResponse.json(progression, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+        'CDN-Cache-Control': 'no-store',
+        'Vercel-CDN-Cache-Control': 'no-store',
+      },
+    });
   } catch (err: any) {
     console.error('Error fetching points progression:', err);
     return NextResponse.json({ error: 'Failed to load points progression' }, { status: 500 });

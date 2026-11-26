@@ -240,8 +240,8 @@ function getInitialData(): DatabaseSchema {
       seasonId: s2026.id,
       batchId: b07.id,
       batchCode: 'IPM07',
-      totalPoints: 30.0,
-      wins: 15,
+      totalPoints: 52.0,
+      wins: 26,
       rank: 1,
       tieBroken: false,
       breakdownBySport: {
@@ -262,8 +262,8 @@ function getInitialData(): DatabaseSchema {
       seasonId: s2026.id,
       batchId: b06.id,
       batchCode: 'IPM06',
-      totalPoints: 14.0,
-      wins: 7,
+      totalPoints: 38.0,
+      wins: 19,
       rank: 2,
       tieBroken: false,
       breakdownBySport: {
@@ -283,8 +283,8 @@ function getInitialData(): DatabaseSchema {
       seasonId: s2026.id,
       batchId: b08.id,
       batchCode: 'IPM08',
-      totalPoints: 10.0,
-      wins: 5,
+      totalPoints: 26.0,
+      wins: 13,
       rank: 3,
       tieBroken: false,
       breakdownBySport: {

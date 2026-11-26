@@ -45,7 +45,10 @@ export default function MatchesPage() {
   React.useEffect(() => {
     async function loadData() {
       try {
-        const res = await fetch('/api/public/matches');
+        const res = await fetch(`/api/public/matches?t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache' },
+        });
         const data = await res.json();
         setMatches(data.matches || []);
         setSports(data.sports || []);
