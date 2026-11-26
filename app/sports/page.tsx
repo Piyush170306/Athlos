@@ -4,6 +4,7 @@ import { BookOpen, FileText, ExternalLink, ChevronRight, CheckCircle2, AlertCirc
 import { getActiveSeason } from '@/lib/db/public';
 import { db } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default function SportsRulesPage() {

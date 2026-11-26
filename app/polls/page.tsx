@@ -4,6 +4,7 @@ import { BarChart2, Flame, CheckCircle, Clock, ShieldAlert } from 'lucide-react'
 import { getActiveSeason, getPublicPolls } from '@/lib/db/public';
 import PollVoteButton from '@/components/PollVoteButton';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default function PollsPage() {

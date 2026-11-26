@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Award, Flame, Calendar, Pin, ArrowRight } from 'lucide-react';
 import { getActiveSeason, getPublicHighlights } from '@/lib/db/public';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default function HighlightsPage() {

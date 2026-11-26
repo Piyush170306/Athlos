@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { History, Trophy, Award, Lock, ShieldCheck, ChevronRight } from 'lucide-react';
 import { getArchivedSeasonsSummary } from '@/lib/db/public';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default function HistoryPage() {

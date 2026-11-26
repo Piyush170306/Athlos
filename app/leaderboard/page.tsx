@@ -13,6 +13,7 @@ import { getPointsProgression } from '@/lib/db/pointsHistory';
 import BattleForLeadGraph from '@/components/cosmic/BattleForLeadGraph';
 import { db } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default function LeaderboardPage() {
