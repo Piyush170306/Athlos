@@ -12,11 +12,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  await db.syncFromRemote();
+
   const importBatches = [...db.getTable('import_batches')].reverse();
   const importRows = db.getTable('import_rows');
 
   return NextResponse.json(
-    { importBatches, importRows },
+    { importBatches, importRows, storageMode: db.getStorageMode() },
     {
       headers: {
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',

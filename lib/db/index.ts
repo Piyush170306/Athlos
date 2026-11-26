@@ -603,6 +603,9 @@ class Database {
         console.warn('Could not persist database to /tmp (in-memory state preserved):', err);
       }
     }
+
+    // Trigger asynchronous remote KV persistence if configured
+    this.saveToRemote().catch(() => {});
   }
 
   // Repository Methods
@@ -692,6 +695,85 @@ class Database {
   public resetToDefault(): void {
     const initial = getInitialData();
     this.save(initial);
+  }
+
+  // Universal Serverless Remote Persistence (Vercel KV / Upstash Redis / Remote Store)
+  private lastRemoteSync: number = 0;
+
+  public async syncFromRemote(force = false): Promise<void> {
+    const now = Date.now();
+    // Cache for 3 seconds to avoid redundant remote requests in the same execution cycle
+    if (!force && this.inMemoryData && now - this.lastRemoteSync < 3000) {
+      return;
+    }
+
+    const kvUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+    if (kvUrl && kvToken) {
+      try {
+        const res = await fetch(`${kvUrl}/get/athlos_wob_db`, {
+          headers: { Authorization: `Bearer ${kvToken}` },
+          cache: 'no-store',
+        });
+        if (res.ok) {
+          const body = await res.json();
+          if (body && body.result) {
+            const parsed = typeof body.result === 'string' ? JSON.parse(body.result) : body.result;
+            if (parsed && Array.isArray(parsed.seasons) && Array.isArray(parsed.matches)) {
+              this.inMemoryData = parsed as DatabaseSchema;
+              this.lastRemoteSync = now;
+              try {
+                fs.writeFileSync(TMP_DB_FILE, JSON.stringify(parsed, null, 2), 'utf-8');
+              } catch {}
+              return;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Could not sync database from remote KV, using local fallback:', err);
+      }
+    }
+
+    // Fallback: load local filesystem state
+    this.load();
+  }
+
+  public async saveToRemote(): Promise<boolean> {
+    if (!this.inMemoryData) return false;
+
+    const kvUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+    if (kvUrl && kvToken) {
+      try {
+        const jsonStr = JSON.stringify(this.inMemoryData);
+        const res = await fetch(`${kvUrl}/set/athlos_wob_db`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${kvToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: jsonStr,
+        });
+        return res.ok;
+      } catch (err) {
+        console.error('Failed to persist database to remote KV store:', err);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  public getStorageMode(): { isRemote: boolean; provider: string } {
+    const hasKv = Boolean(
+      (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) ||
+      (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+    );
+    if (hasKv) {
+      return { isRemote: true, provider: 'Vercel KV / Upstash Redis (Shared Cross-Container)' };
+    }
+    return { isRemote: false, provider: 'Serverless Local Storage (Ephemeral Container Mode)' };
   }
 }
 

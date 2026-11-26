@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getActiveSeason } from '@/lib/db/public';
 import { getPointsProgression } from '@/lib/db/pointsHistory';
+import { db } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   try {
+    await db.syncFromRemote();
     const { searchParams } = new URL(req.url);
     const seasonId = searchParams.get('seasonId') || getActiveSeason().id;
     const progression = getPointsProgression(seasonId);

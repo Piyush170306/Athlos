@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { verifyAdminSessionToken } from '@/lib/auth';
 import { approveImportBatch } from '@/lib/importer/approval';
+import { db } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,10 +19,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Import Batch ID is required' }, { status: 400 });
     }
 
+    await db.syncFromRemote();
+
     const result = approveImportBatch(importBatchId, verified.user.email);
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
+
+    await db.saveToRemote();
 
     // Invalidate and revalidate all public routes so latest data reflects immediately
     try {

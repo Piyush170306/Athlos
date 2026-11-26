@@ -16,7 +16,8 @@ import { db } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function LeaderboardPage() {
+export default async function LeaderboardPage() {
+  await db.syncFromRemote();
   const activeSeason = getActiveSeason();
   const leaderboard = getOfficialLeaderboard(activeSeason.id);
   const pointsProgression = getPointsProgression(activeSeason.id);

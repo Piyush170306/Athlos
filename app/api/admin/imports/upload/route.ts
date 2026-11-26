@@ -27,6 +27,9 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    // Sync from remote persistent store if available
+    await db.syncFromRemote();
+
     const activeSeason = getActiveSeason();
 
     // 1. Parse workbook
@@ -64,6 +67,9 @@ export async function POST(req: NextRequest) {
         approvalError = approveResult.error;
       }
     }
+
+    // Persist to remote shared store (Vercel KV / Upstash)
+    await db.saveToRemote();
 
     const latestBatch = db.findById('import_batches', staged.importBatch.id) || staged.importBatch;
 

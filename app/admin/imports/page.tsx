@@ -21,6 +21,7 @@ import { ImportBatch } from '@/lib/types';
 export default function AdminImportsPage() {
   const [batches, setBatches] = useState<ImportBatch[]>([]);
   const [selectedBatch, setSelectedBatch] = useState<ImportBatch | null>(null);
+  const [storageMode, setStorageMode] = useState<{ isRemote: boolean; provider: string } | null>(null);
   const [uploading, setUploading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [syncingOfficial, setSyncingOfficial] = useState(false);
@@ -38,6 +39,9 @@ export default function AdminImportsPage() {
       const res = await fetch('/api/admin/imports');
       const data = await res.json();
       setBatches(data.importBatches || []);
+      if (data.storageMode) {
+        setStorageMode(data.storageMode);
+      }
       if (data.importBatches?.length > 0 && !selectedBatch) {
         setSelectedBatch(data.importBatches[0]);
       }
@@ -226,6 +230,23 @@ export default function AdminImportsPage() {
           <p className="text-xs text-slate-400 mt-1">
             Excel & Google Sheets pipeline with atomic auto-publication, Row 89 score validation, and rollback support.
           </p>
+          <div className="flex items-center space-x-2 mt-2">
+            <span className="text-[11px] text-slate-400">Persistence:</span>
+            {storageMode?.isRemote ? (
+              <span className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-950 text-emerald-300 border border-emerald-800">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Shared Cloud KV (Synchronized Live)</span>
+              </span>
+            ) : (
+              <span
+                className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-950/80 text-amber-300 border border-amber-800/80"
+                title="Connect Vercel KV in Storage tab to automatically sync data across all serverless containers"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span>Serverless Local Mode (Connect Vercel KV for instant multi-container sync)</span>
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Global Pipeline Action Buttons */}

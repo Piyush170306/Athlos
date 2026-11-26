@@ -15,6 +15,8 @@ export async function GET(req: NextRequest) {
   const user = checkAuth(req);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  await db.syncFromRemote();
+
   const gSheetsConfig = db.getTable('google_sheets_config')[0] || {
     spreadsheetId: '',
     sheetName: '2026-27',
@@ -40,6 +42,7 @@ export async function GET(req: NextRequest) {
     allowedEmails: (process.env.ADMIN_ALLOWED_EMAILS || 'admin@athlos.edu,sports@athlos.edu').split(','),
     googleSheets: gSheetsConfig,
     storageEnvKeys,
+    storageMode: db.getStorageMode(),
   });
 }
 

@@ -10,11 +10,13 @@ import {
 import LuxuryHomeClient from '@/components/luxury/LuxuryHomeClient';
 import { HeadlineItem } from '@/components/luxury/LuxuryHeadlineTicker';
 
+import { db } from '@/lib/db';
+
 export const dynamic = 'force-dynamic';
 export const revalidate = 0; // Dynamic server rendering for live accuracy
 
-
-export default function HomePage() {
+export default async function HomePage() {
+  await db.syncFromRemote();
   const activeSeason = getActiveSeason();
   const leaderboard = getOfficialLeaderboard(activeSeason.id);
   const matches = getPublicMatches(activeSeason.id);

@@ -7,6 +7,7 @@ export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   try {
+    await db.syncFromRemote();
     const season = getActiveSeason();
     const matches = getPublicMatches(season.id);
     const sports = db.query('sports', (s) => s.seasonId === season.id && s.enabled);
