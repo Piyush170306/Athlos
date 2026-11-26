@@ -40,5 +40,4 @@ next-env.d.ts
 # SQLite local data files
 /data/*.db*
 /data/*.sqlite*
-/data/athlos_wob.json
 *.tmp*
