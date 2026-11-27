@@ -18,12 +18,21 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 
+  // Invalidate older session tokens if credential rotation or password reset took place
+  if (user.tokenVersion && verified.user.tokenVersion !== user.tokenVersion) {
+    return NextResponse.json(
+      { authenticated: false, error: 'Session invalidated due to password rotation. Please log in again.' },
+      { status: 401 }
+    );
+  }
+
   return NextResponse.json({
     authenticated: true,
     user: {
       id: user.id,
       email: user.email,
       role: user.role,
+      mustChangePassword: Boolean(user.mustChangePassword),
     },
   });
 }

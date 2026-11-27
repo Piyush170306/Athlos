@@ -146,8 +146,12 @@ export function approveImportBatch(
         ? 'cat-girls'
         : 'cat-boys';
 
+    const stableMatchId = row.rowNumber
+      ? `match-${batch.seasonId}-${row.rowNumber}`
+      : `match-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`;
+
     const newMatch: Match = {
-      id: `match-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`,
+      id: stableMatchId,
       seasonId: batch.seasonId,
       sportId: sport ? sport.id : 'sport-general',
       categoryId: targetCatId,

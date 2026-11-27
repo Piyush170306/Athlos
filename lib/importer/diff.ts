@@ -73,10 +73,13 @@ export function stageWorkbookDiff(
         (m.batchAId === bAId && m.batchBId === bBId) ||
         (m.batchAId === bBId && m.batchBId === bAId);
 
-      // 2. Sport + Category + Batches
+      // 2. Deterministic schedule row ID match (e.g. match-season-2026-27-12)
+      if (m.id === `match-${seasonId}-${row.rowNumber}` && sameSport) return true;
+
+      // 3. Sport + Category + Batches
       if (sameSport && sameCat && sameBatches) return true;
 
-      // 3. Sport + Batches + Date
+      // 4. Sport + Batches + Date
       if (sameSport && sameBatches && row.dateStr && m.scheduledDate === row.dateStr) return true;
 
       return false;

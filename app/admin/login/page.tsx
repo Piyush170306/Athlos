@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Lock, Mail, Key, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Lock, Mail, Key, ShieldCheck, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('admin@athlos.edu');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -94,13 +95,21 @@ export default function AdminLoginPage() {
               <div className="relative">
                 <Key className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 bg-surfaceLight border border-surfaceBorder rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-athlos-gold"
-                  placeholder="••••••••••••"
+                  className="w-full pl-9 pr-10 py-2.5 bg-surfaceLight border border-surfaceBorder rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-athlos-gold"
+                  placeholder="Enter administrator password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-athlos-gold focus:outline-none"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
@@ -113,23 +122,10 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          <div className="pt-4 border-t border-surfaceBorder/60 space-y-2.5 text-center">
-            <div className="p-2.5 rounded-lg bg-surfaceLight/80 border border-amber-500/30 text-slate-300 text-xs flex items-center justify-between">
-              <span className="font-mono text-[11px] text-slate-300">admin@athlos.edu • AdminPassword2026!</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('admin@athlos.edu');
-                  setPassword('AdminPassword2026!');
-                }}
-                className="text-[10px] uppercase font-bold text-athlos-gold hover:text-yellow-200 px-2 py-0.5 rounded bg-black/40 border border-amber-500/30"
-              >
-                Auto-Fill
-              </button>
-            </div>
+          <div className="pt-4 border-t border-surfaceBorder/60 text-center">
             <p className="text-[11px] text-slate-500 flex items-center justify-center space-x-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Protected server-side session with brute-force rate limiter</span>
+              <span>Protected server-side session with bcrypt hashing & brute-force protection</span>
             </p>
           </div>
         </div>

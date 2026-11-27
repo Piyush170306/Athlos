@@ -215,6 +215,8 @@ export interface AdminUser {
   email: string;
   passwordHash: string;
   role: 'SUPER_ADMIN' | 'ADMIN';
+  mustChangePassword?: boolean;
+  tokenVersion?: number;
   resetToken?: string;
   resetTokenExpiresAt?: string;
   createdAt: string;

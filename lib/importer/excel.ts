@@ -31,31 +31,71 @@ export interface ParsedWorkbookResult {
 
 export function normalizeExcelDate(val: any): string | undefined {
   if (!val) return undefined;
+
+  // Handle Date instances (e.g. from XLSX cellDates: true)
+  if (val instanceof Date) {
+    const year = val.getFullYear();
+    const month = val.getMonth() + 1;
+    const date = val.getDate();
+    if (year === 2026) {
+      if (month === 12) {
+        return `2026-12-${String(date).padStart(2, '0')}`;
+      }
+      // If date was entered as D/12/26 and interpreted as Month D, Day 12 by US locale:
+      if ((date === 11 || date === 12) && month >= 1 && month <= 12) {
+        return `2026-12-${String(month).padStart(2, '0')}`;
+      }
+    }
+    return val.toISOString().split('T')[0];
+  }
+
+  // Handle Excel numeric date serials
   if (typeof val === 'number') {
-    // Excel serial date (e.g. 46033 -> 2026-11-01)
+    const p = XLSX.SSF.parse_date_code(val);
+    if (p && p.y === 2026) {
+      if (p.m === 12) {
+        return `2026-12-${String(p.d).padStart(2, '0')}`;
+      }
+      if (p.d === 12 && p.m >= 1 && p.m <= 12) {
+        return `2026-12-${String(p.m).padStart(2, '0')}`;
+      }
+      return `${p.y}-${String(p.m).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`;
+    }
     const d = new Date(Math.round((val - 25569) * 86400 * 1000));
     return d.toISOString().split('T')[0];
   }
+
   const s = String(val).trim();
   if (!s) return undefined;
-  // If format is like "1/11/26" or "11/15/26" or "2026-11-01"
+
+  // Handle text dates e.g. "1/12/26", "04/12/26", "13/12/26", or "2026-12-04"
   const parts = s.split(/[\/\-]/);
   if (parts.length === 3) {
     if (parts[0].length === 4) {
       // YYYY-MM-DD
-      return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+      const y = parts[0];
+      const m = parts[1];
+      const d = parts[2];
+      if (y === '2026' && d === '12' && parseInt(m, 10) >= 1 && parseInt(m, 10) <= 12) {
+        return `2026-12-${m.padStart(2, '0')}`;
+      }
+      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
     }
-    const p1 = parts[0];
-    const p2 = parts[1];
+
+    const p1 = parseInt(parts[0], 10);
+    const p2 = parseInt(parts[1], 10);
     const year = parts[2].length === 2 ? '20' + parts[2] : parts[2];
-    // In ATHLOS 2026, month is November (11)
-    if (p2 === '11') {
-      return `${year}-11-${p1.padStart(2, '0')}`;
+
+    if (year === '2026') {
+      // All official tournament fixtures take place in December 2026 (Month 12)
+      if (p2 === 12 && p1 >= 1 && p1 <= 31) {
+        return `2026-12-${String(p1).padStart(2, '0')}`;
+      }
+      if (p1 === 12 && p2 >= 1 && p2 <= 31) {
+        return `2026-12-${String(p2).padStart(2, '0')}`;
+      }
     }
-    if (p1 === '11') {
-      return `${year}-11-${p2.padStart(2, '0')}`;
-    }
-    return `${year}-${p2.padStart(2, '0')}-${p1.padStart(2, '0')}`;
+    return `${year}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
   }
   return s;
 }

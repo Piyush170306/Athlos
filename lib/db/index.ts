@@ -56,7 +56,7 @@ try {
 
 function getInitialData(): DatabaseSchema {
   const now = new Date().toISOString();
-  const initialAdminPassword = process.env.INITIAL_ADMIN_PASSWORD || 'AdminPassword2026!';
+  const initialAdminPassword = process.env.INITIAL_ADMIN_PASSWORD || 'Athlos@2026';
   const passwordHash = bcrypt.hashSync(initialAdminPassword, 10);
 
   // 1. Initial Seasons
@@ -481,6 +481,8 @@ function getInitialData(): DatabaseSchema {
       email: process.env.INITIAL_ADMIN_EMAIL || 'admin@athlos.edu',
       passwordHash,
       role: 'SUPER_ADMIN',
+      mustChangePassword: true,
+      tokenVersion: 2,
       createdAt: now,
       updatedAt: now,
     },

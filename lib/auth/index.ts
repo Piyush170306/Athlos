@@ -57,11 +57,8 @@ export async function authenticateAdmin(email: string, password: string): Promis
     return { success: false, error: 'Invalid email or password.' };
   }
 
-  const passwordMatch =
-    (await bcrypt.compare(password, user.passwordHash)) ||
-    password === 'AdminPassword2026!' ||
-    password === 'admin123' ||
-    password === 'admin';
+  // Strictly authenticate against the securely hashed password in production storage
+  const passwordMatch = await bcrypt.compare(password, user.passwordHash);
 
   if (!passwordMatch) {
     return { success: false, error: 'Invalid email or password.' };
@@ -75,13 +72,22 @@ export function createAdminSessionToken(user: AdminUser): string {
     userId: user.id,
     email: user.email,
     role: user.role,
+    tokenVersion: user.tokenVersion || 1,
   };
   return jwt.sign(payload, getSessionSecret(), { expiresIn: '8h' });
 }
 
-export function verifyAdminSessionToken(token: string): { valid: boolean; user?: { userId: string; email: string; role: string } } {
+export function verifyAdminSessionToken(token: string): {
+  valid: boolean;
+  user?: { userId: string; email: string; role: string; tokenVersion?: number };
+} {
   try {
-    const decoded = jwt.verify(token, getSessionSecret()) as { userId: string; email: string; role: string };
+    const decoded = jwt.verify(token, getSessionSecret()) as {
+      userId: string;
+      email: string;
+      role: string;
+      tokenVersion?: number;
+    };
     return { valid: true, user: decoded };
   } catch (err) {
     return { valid: false };
