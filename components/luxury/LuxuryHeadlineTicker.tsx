@@ -29,7 +29,7 @@ export default function LuxuryHeadlineTicker({
       : [
           { id: '1', text: 'ATHLOS WAR OF BATCHES 2026–27', highlight: true, badge: 'CHAMPIONSHIP' },
           { id: '2', text: 'IPM06 • IPM07 • IPM08', badge: 'COHORTS' },
-          { id: '3', text: 'OFFICIAL STANDINGS: IPM07 LEADING WITH 36.0 PTS', highlight: true },
+          { id: '3', text: 'OFFICIAL STANDINGS: IPM06: 0.0 PTS • IPM07: 0.0 PTS • IPM08: 0.0 PTS', highlight: true },
         ];
 
   // Double buffer for 100% gapless continuous marquee

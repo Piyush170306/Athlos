@@ -2,11 +2,13 @@ import React from 'react';
 import Link from 'next/link';
 import { Award, Flame, Calendar, Pin, ArrowRight } from 'lucide-react';
 import { getActiveSeason, getPublicHighlights } from '@/lib/db/public';
+import { db } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function HighlightsPage() {
+export default async function HighlightsPage() {
+  await db.syncFromRemote();
   const activeSeason = getActiveSeason();
   const highlights = getPublicHighlights(activeSeason.id);
 

@@ -48,6 +48,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: approveResult.error }, { status: 400 });
     }
 
+    // Persist to remote shared store (Vercel KV / Upstash Redis)
+    await db.saveToRemote();
+
     // 4. Invalidate all public routes
     try {
       revalidatePath('/', 'layout');

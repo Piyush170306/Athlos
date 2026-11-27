@@ -167,6 +167,7 @@ export interface Highlight {
   sortOrder: number;
   publishedAt: string;
   author: string;
+  updatedAt?: string;
 }
 
 export interface Announcement {

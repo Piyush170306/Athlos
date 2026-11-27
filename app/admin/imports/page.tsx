@@ -31,7 +31,7 @@ export default function AdminImportsPage() {
 
   // Upload parameters
   const [file, setFile] = useState<File | null>(null);
-  const [sheetName, setSheetName] = useState('If Prom is on 13th ');
+  const [sheetName, setSheetName] = useState('2026-27');
   const [autoApprove, setAutoApprove] = useState(true);
 
   const loadBatches = async () => {
@@ -549,8 +549,8 @@ export default function AdminImportsPage() {
                     </div>
 
                     <div className="text-[11px] text-slate-400 flex items-center justify-between">
-                      <span>{batch.addedCount} new • {batch.updatedCount} upd</span>
-                      <span className="font-mono">{new Date(batch.createdAt).toLocaleDateString()}</span>
+                      <span>{(batch.addedCount ?? (batch as any).summary?.addedCount) ?? 0} new • {(batch.updatedCount ?? (batch as any).summary?.updatedCount) ?? 0} upd</span>
+                      <span className="font-mono">{new Date(batch.createdAt || (batch as any).uploadedAt || Date.now()).toLocaleDateString()}</span>
                     </div>
                   </div>
                 );
@@ -586,8 +586,8 @@ export default function AdminImportsPage() {
                     {selectedBatch.fileName}
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Uploaded by {selectedBatch.createdBy} on{' '}
-                    {new Date(selectedBatch.createdAt).toLocaleString('en-GB')}
+                    Uploaded by {selectedBatch.createdBy || (selectedBatch as any).uploadedBy || 'admin@athlos.edu'} on{' '}
+                    {new Date(selectedBatch.createdAt || (selectedBatch as any).uploadedAt || Date.now()).toLocaleString('en-GB')}
                   </p>
                 </div>
 
@@ -633,7 +633,7 @@ export default function AdminImportsPage() {
                     Additions
                   </span>
                   <span className="text-xl font-black text-white">
-                    {selectedBatch.addedCount}
+                    {selectedBatch.addedCount ?? (selectedBatch as any).summary?.addedCount ?? 0}
                   </span>
                 </div>
                 <div className="p-3 rounded-lg bg-surfaceLight/60 border border-surfaceBorder">
@@ -641,7 +641,7 @@ export default function AdminImportsPage() {
                     Updates
                   </span>
                   <span className="text-xl font-black text-white">
-                    {selectedBatch.updatedCount}
+                    {selectedBatch.updatedCount ?? (selectedBatch as any).summary?.updatedCount ?? 0}
                   </span>
                 </div>
                 <div className="p-3 rounded-lg bg-surfaceLight/60 border border-surfaceBorder">
@@ -649,7 +649,7 @@ export default function AdminImportsPage() {
                     Conflicts
                   </span>
                   <span className="text-xl font-black text-white">
-                    {selectedBatch.conflictCount}
+                    {selectedBatch.conflictCount ?? (selectedBatch as any).summary?.conflictCount ?? 0}
                   </span>
                 </div>
                 <div className="p-3 rounded-lg bg-surfaceLight/60 border border-surfaceBorder">
@@ -657,29 +657,32 @@ export default function AdminImportsPage() {
                     Missing Preserved
                   </span>
                   <span className="text-xl font-black text-white">
-                    {selectedBatch.missingCount}
+                    {selectedBatch.missingCount ?? (selectedBatch as any).summary?.missingCount ?? 0}
                   </span>
                 </div>
               </div>
 
-              {/* Official Points Row 89 Diff Preview */}
+              {/* Official Points Row 89 / Total Row Diff Preview */}
               <div className="p-4 rounded-xl bg-surfaceLight/40 border border-surfaceBorder space-y-2">
                 <h4 className="text-xs font-extrabold uppercase tracking-wider text-athlos-gold flex items-center space-x-1.5">
                   <ShieldCheck className="w-4 h-4" />
-                  <span>Batch Scores Table Impact (Row 89 Official Leaderboard Authority)</span>
+                  <span>Batch Scores Table Impact (Official Leaderboard Authority)</span>
                 </h4>
                 <div className="grid grid-cols-3 gap-3 text-center pt-2">
                   {['IPM08', 'IPM06', 'IPM07'].map((code) => {
-                    const before = selectedBatch.diffSummary.officialScoresBefore?.[code] ?? 0;
-                    const after = selectedBatch.diffSummary.officialScoresAfter?.[code] ?? 0;
+                    const before = selectedBatch.diffSummary?.officialScoresBefore?.[code] ?? 0;
+                    const after =
+                      selectedBatch.diffSummary?.officialScoresAfter?.[code] ??
+                      (selectedBatch as any).summary?.batchScores?.[code] ??
+                      0;
 
                     return (
                       <div key={code} className="p-2.5 rounded bg-black/40 border border-surfaceBorder">
                         <span className="text-xs font-bold text-slate-300 block">{code}</span>
                         <div className="text-sm font-black mt-1 flex items-center justify-center space-x-1">
-                          <span className="text-slate-400">{before.toFixed(1)}</span>
+                          <span className="text-slate-400">{Number(before).toFixed(1)}</span>
                           <span className="text-athlos-gold">→</span>
-                          <span className="text-white">{after.toFixed(1)} pts</span>
+                          <span className="text-white">{Number(after).toFixed(1)} pts</span>
                         </div>
                       </div>
                     );
@@ -688,7 +691,7 @@ export default function AdminImportsPage() {
               </div>
 
               {/* Conflict Warnings if any */}
-              {selectedBatch.diffSummary.conflicts?.length > 0 && (
+              {selectedBatch.diffSummary?.conflicts && selectedBatch.diffSummary.conflicts.length > 0 && (
                 <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-600 text-xs text-amber-200 space-y-2">
                   <div className="flex items-center space-x-2 font-bold text-amber-400">
                     <AlertTriangle className="w-4 h-4" />
@@ -705,7 +708,7 @@ export default function AdminImportsPage() {
               )}
 
               {/* Missing rows preservation note */}
-              {selectedBatch.diffSummary.missing?.length > 0 && (
+              {selectedBatch.diffSummary?.missing && selectedBatch.diffSummary.missing.length > 0 && (
                 <div className="p-4 rounded-xl bg-surfaceLight border border-surfaceBorder text-xs text-slate-300 space-y-1">
                   <div className="font-bold text-white">Missing Source Rows Preserved:</div>
                   <p className="text-slate-400 text-[11px]">
