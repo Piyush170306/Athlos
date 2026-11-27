@@ -5334,10 +5334,41 @@
     {
       "id": "gs-config-default",
       "seasonId": "season-2026-27",
-      "spreadsheetId": "",
-      "sheetName": "If Prom is on 13th ",
+      "spreadsheetId": "1C7RNiyTwUwb5b6kQ7DRJFZDLqivcqthvUDmvGrGt6TE",
+      "spreadsheetName": "ATHLOS War of Batches 2026–27 Master Schedule",
+      "spreadsheetUrl": "https://docs.google.com/spreadsheets/d/1C7RNiyTwUwb5b6kQ7DRJFZDLqivcqthvUDmvGrGt6TE/edit?usp=sharing",
+      "sheetName": "2026-27",
       "syncFrequencyMinutes": 5,
-      "isActive": false
+      "isActive": true,
+      "lastAttemptAt": "2026-11-27T18:38:19.427Z",
+      "lastSuccessAt": "2026-11-27T18:38:19.430Z",
+      "lastSummary": {
+        "addedCount": 0,
+        "updatedCount": 0,
+        "unchangedCount": 72,
+        "skippedCount": 0,
+        "errors": [],
+        "officialScores": {
+          "IPM08": 0,
+          "IPM06": 0,
+          "IPM07": 0
+        }
+      },
+      "syncHistory": [
+        {
+          "id": "sync-init-1795804699430",
+          "startedAt": "2026-11-27T18:38:19.430Z",
+          "completedAt": "2026-11-27T18:38:19.430Z",
+          "status": "SUCCESS",
+          "actor": "system:initial-connection",
+          "addedCount": 0,
+          "updatedCount": 0,
+          "unchangedCount": 72,
+          "skippedCount": 0,
+          "errors": [],
+          "message": "Successfully established direct live connection with Google Spreadsheet 1C7RNiyTwUwb5b6kQ7DRJFZDLqivcqthvUDmvGrGt6TE."
+        }
+      ]
     }
   ]
 }

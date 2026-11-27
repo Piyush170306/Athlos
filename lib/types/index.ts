@@ -227,10 +227,34 @@ export interface GoogleSheetsConfig {
   id: string;
   seasonId: string;
   spreadsheetId: string;
+  spreadsheetName?: string;
+  spreadsheetUrl?: string;
   sheetName: string;
   syncFrequencyMinutes: number;
   lastAttemptAt?: string;
   lastSuccessAt?: string;
   lastError?: string;
+  lastContentHash?: string;
+  lastSummary?: {
+    addedCount: number;
+    updatedCount: number;
+    unchangedCount: number;
+    skippedCount: number;
+    errors: string[];
+    officialScores: Record<string, number>;
+  };
+  syncHistory?: Array<{
+    id: string;
+    startedAt: string;
+    completedAt: string;
+    status: 'SUCCESS' | 'FAILED' | 'UNCHANGED';
+    actor: string;
+    addedCount: number;
+    updatedCount: number;
+    unchangedCount: number;
+    skippedCount: number;
+    errors: string[];
+    message: string;
+  }>;
   isActive: boolean;
 }

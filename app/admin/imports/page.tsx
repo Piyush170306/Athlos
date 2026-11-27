@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   FileSpreadsheet,
   Upload,
@@ -451,15 +452,15 @@ export default function AdminImportsPage() {
             <div className="flex items-center justify-between text-xs mb-2">
               <span className="font-bold uppercase tracking-wider text-athlos-cyan flex items-center space-x-1.5">
                 <FileSpreadsheet className="w-4 h-4" />
-                <span>Google Sheets Sync</span>
+                <span>Live Google Sheets Sync</span>
               </span>
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-1.5 py-0.5 rounded">
-                Target: ~5 min
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-1.5 py-0.5 rounded flex items-center space-x-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>5-Min Automated</span>
               </span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Triggers server-side synchronization. All detected changes enter this staging review queue;
-              zero automatic publication.
+              Direct connection to the official Google Spreadsheet. Changes are synchronized automatically to production Upstash Redis every 5 minutes.
             </p>
           </div>
 
@@ -470,16 +471,20 @@ export default function AdminImportsPage() {
                 setMessage(null);
                 setError(null);
                 try {
-                  const res = await fetch('/api/admin/sheets/sync', { method: 'POST' });
+                  const res = await fetch('/api/admin/sheets/sync', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ force: true }),
+                  });
                   const data = await res.json();
                   if (!res.ok) {
                     setError(data.error);
                   } else {
-                    setMessage(data.message);
+                    setMessage(data.message || 'Google Sheets live sync complete!');
                     await loadBatches();
                   }
-                } catch (err) {
-                  setError('Failed to trigger sync');
+                } catch {
+                  setError('Failed to trigger live Google Sheets sync');
                 } finally {
                   setActionLoading(false);
                 }
@@ -488,11 +493,24 @@ export default function AdminImportsPage() {
               className="w-full py-2 px-3 rounded bg-athlos-cyan hover:bg-cyan-400 text-black text-xs font-black uppercase tracking-wider transition shadow-glow-cyan flex items-center justify-center space-x-2"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${actionLoading ? 'animate-spin' : ''}`} />
-              <span>{actionLoading ? 'Syncing Sheet...' : 'Sync Google Sheets Now'}</span>
+              <span>{actionLoading ? 'Syncing...' : 'SYNC GOOGLE SHEETS NOW'}</span>
             </button>
-            <span className="text-[10px] text-slate-500 text-center block">
-              Vercel Hobby: 24h cron limit • Pro/Daemon: 5m cron supported
-            </span>
+            <div className="flex items-center justify-between text-[11px] pt-1">
+              <Link
+                href="/admin/sheets"
+                className="text-athlos-gold hover:underline font-bold flex items-center space-x-1"
+              >
+                <span>Live Sync Dashboard →</span>
+              </Link>
+              <a
+                href="https://docs.google.com/spreadsheets/d/1C7RNiyTwUwb5b6kQ7DRJFZDLqivcqthvUDmvGrGt6TE/edit?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-400 hover:text-white flex items-center space-x-1"
+              >
+                <span>Open Sheet ↗</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

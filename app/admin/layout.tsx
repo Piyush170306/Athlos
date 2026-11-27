@@ -23,10 +23,12 @@ import {
   CheckCircle2,
   Eye,
   EyeOff,
+  RefreshCw,
 } from 'lucide-react';
 
 const ADMIN_NAV = [
   { href: '/admin', label: 'Overview', icon: LayoutDashboard },
+  { href: '/admin/sheets', label: 'Live Google Sheets Sync', icon: RefreshCw },
   { href: '/admin/seasons', label: 'Seasons & Activation', icon: CalendarDays },
   { href: '/admin/sports', label: 'Sports & Formats', icon: Flame },
   { href: '/admin/matches', label: 'Matches & Results', icon: Swords },
