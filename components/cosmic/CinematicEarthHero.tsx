@@ -170,20 +170,25 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
     const ambientLight = new THREE.AmbientLight(0x0c1420, 0.85);
     scene.add(ambientLight);
 
-    // Key Top-Front Directional Light directly illuminating the typography ring
-    const ringKeyLight = new THREE.DirectionalLight(0xffffff, 4.8);
+    // Key Top-Front Directional Light directly illuminating the typography ring with crisp white specular highlights
+    const ringKeyLight = new THREE.DirectionalLight(0xffffff, 5.5);
     ringKeyLight.position.set(3.5, 3.2, 7.0);
     scene.add(ringKeyLight);
 
     // Luminous Ice-Blue Fill Point Light catching the ring's extruded bevel edges
-    const silverRingPointLight = new THREE.PointLight(0xa5d8ff, 4.6, 22);
+    const silverRingPointLight = new THREE.PointLight(0xbce3ff, 5.2, 24);
     silverRingPointLight.position.set(2.8, 1.8, 6.8);
     scene.add(silverRingPointLight);
 
-    // Subtle lower specular kicker light catching bottom bevels
-    const ringKickerLight = new THREE.PointLight(0x79c9f2, 3.2, 18);
+    // Lower specular kicker light catching bottom bevels
+    const ringKickerLight = new THREE.PointLight(0x79c9f2, 3.8, 20);
     ringKickerLight.position.set(5.5, -2.2, 5.8);
     scene.add(ringKickerLight);
+
+    // Balanced rim light ensuring letters in transit remain clearly contoured against dark space
+    const ringRimLight = new THREE.DirectionalLight(0x79c9f2, 2.4);
+    ringRimLight.position.set(-2.0, 3.8, 3.0);
+    scene.add(ringRimLight);
 
     // C. Deep Cosmic Starfield (Deep Space Black with Ice Blue and Starlight White stars)
     const starCount = 340;
@@ -433,14 +438,15 @@ export default function CinematicEarthHero({ onExploreClick }: CinematicEarthHer
     earthGroup.add(ringParent);
 
     // Material: Premium Luminous Metallic Silver / Ice-Blue with bright white highlights
-    // Calibrated metalness (0.58), high specular gloss, and luminous ice-blue emissive radiance
-    // ensures the letters radiate bright highlights and never appear dark against space or Earth
+    // Calibrated metalness (0.40) prevents ambient darkening in cosmic void, smooth roughness (0.16)
+    // creates broad luminous specular highlights, and radiant ice-blue emissive (0x79c9f2 at 0.65)
+    // ensures letters remain sharply legible against both the dark background and illuminated Earth.
     const silverRingMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf5f9ff,
-      metalness: 0.58,
-      roughness: 0.12,
-      emissive: 0x5a8bb8,
-      emissiveIntensity: 0.42,
+      color: 0xffffff,
+      metalness: 0.40,
+      roughness: 0.16,
+      emissive: 0x79c9f2,
+      emissiveIntensity: 0.65,
     });
 
     let ringRotGroup: THREE.Group | null = null;

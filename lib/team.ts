@@ -92,7 +92,8 @@ export function parseTeamFilename(filename: string): {
 
   // Clean trailing spaces or artifacts
   name = name.trim();
-  designation = designation.trim();
+  // Normalize "Co-ordinator" (and case/format variations such as CO-ORDINATOR, Co-ordinator, co-ordinator) to "Coordinator"
+  designation = designation.trim().replace(/\bco[-_]ordinator\b/gi, 'Coordinator');
 
   if (!name || !designation) {
     return {

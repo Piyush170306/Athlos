@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { href: '/sports', label: 'Rules', icon: BookOpen },
   { href: '/highlights', label: 'Highlights', icon: Flame },
   { href: '/polls', label: 'Predictions', icon: BarChart2 },
+  { href: '/history', label: 'Past Seasons', icon: History },
   { href: '/team', label: 'Team', icon: Users },
   {
     href: 'https://www.instagram.com/ipmsports.club?evlk=MXJqdjNzNGk4NTRlOA==',
@@ -19,7 +20,6 @@ const NAV_LINKS = [
     icon: Instagram,
     isExternal: true,
   },
-  { href: '/history', label: 'Past Seasons', icon: History },
 ];
 
 export default function Navbar() {

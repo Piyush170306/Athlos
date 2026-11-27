@@ -62,7 +62,7 @@ export default function TeamMemberCard({ member, onSelect }: TeamMemberCardProps
 
         <div className="mt-1.5 inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#050B16] border border-[#1D5E91]/40 text-[11px] font-mono font-semibold text-[#C7D3DF] tracking-wide">
           <span className="w-1.5 h-1.5 rounded-full bg-[#79C9F2] mr-1.5" />
-          <span>{member.designation}</span>
+          <span>{member.designation.replace(/\bco[-_]ordinator\b/gi, 'Coordinator')}</span>
         </div>
       </div>
     </div>

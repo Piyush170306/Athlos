@@ -3,11 +3,11 @@ import Link from 'next/link';
 import { ShieldCheck, Clock, Phone } from 'lucide-react';
 
 const CONTACT_POCS = [
-  { name: 'Piyush Mahajan', phone: '7030797111', tel: 'tel:7030797111' },
-  { name: 'Aekanth Arul', phone: '+91 97877 73313', tel: 'tel:+919787773313' },
-  { name: 'Renita Singh', phone: '+91 83688 80401', tel: 'tel:+918368880401' },
-  { name: 'Harvansh Chaube', phone: '+91 70607 70482', tel: 'tel:+917060770482' },
   { name: 'Aditya S', phone: '+91 80726 71766', tel: 'tel:+918072671766' },
+  { name: 'Aekanth Arul', phone: '+91 97877 73313', tel: 'tel:+919787773313' },
+  { name: 'Harvansh Chaube', phone: '+91 70607 70482', tel: 'tel:+917060770482' },
+  { name: 'Piyush Mahajan', phone: '7030797111', tel: 'tel:7030797111' },
+  { name: 'Renita Singh', phone: '+91 83688 80401', tel: 'tel:+918368880401' },
   { name: 'Shaurya Baid', phone: '+91 79951 71413', tel: 'tel:+917995171413' },
 ];
 

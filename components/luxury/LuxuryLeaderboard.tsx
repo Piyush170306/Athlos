@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Trophy, ShieldCheck, ArrowRight, Sparkles, ExternalLink } from 'lucide-react';
+import { Trophy, ArrowRight, Sparkles, ExternalLink } from 'lucide-react';
 import { LeaderboardEntry } from '@/lib/db/public';
 import TiltCard from './TiltCard';
 
@@ -32,11 +32,6 @@ export default function LuxuryLeaderboard({
               Official Leaderboard
             </h2>
           </div>
-
-          <p className="text-xs text-slate-400 mt-1.5 flex items-center space-x-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#79C9F2]" />
-            <span>Authoritative totals from approved Batch Scores Table (Row 89)</span>
-          </p>
         </div>
 
         <Link

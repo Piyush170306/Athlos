@@ -92,7 +92,7 @@ export default function TeamProfileModal({ member, onClose }: TeamProfileModalPr
           <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-xl bg-[#0B1727]/90 border border-[#1D5E91]/60 shadow-sm">
             <Award className="w-4 h-4 text-[#79C9F2]" />
             <span className="font-mono text-sm sm:text-base font-bold text-[#F2F7FC] tracking-wider uppercase">
-              {member.designation}
+              {member.designation.replace(/\bco[-_]ordinator\b/gi, 'Coordinator')}
             </span>
           </div>
 
