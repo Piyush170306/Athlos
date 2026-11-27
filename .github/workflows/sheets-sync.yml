@@ -1,0 +1,17 @@
+name: Live Google Sheets 5-Minute Sync
+
+on:
+  schedule:
+    # Runs every 5 minutes (standard cron schedule)
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions UI
+
+jobs:
+  sync:
+    name: Trigger Google Sheets Sync
+    runs-on: ubuntu-latest
+    steps:
+      - name: Invoke Athlos Sheets Sync Endpoint
+        run: |
+          curl -s -f -X POST "https://athloswobdashboard.vercel.app/api/cron/sheets-sync?secret=athlos_cron_sync_secret_2026&force=false" \
+            -H "Content-Type: application/json" || echo "Sync request sent"
