@@ -106,6 +106,7 @@ export function parseExcelWorkbook(fileBuffer: Buffer, targetSheetName?: string)
   let currentFormat = '';
   let currentTimeSlot = '';
   let currentDateStr = '';
+  let foundTotalRow = false;
 
   for (let r = 2; r < rows.length; r++) {
     const row = rows[r];
@@ -119,6 +120,7 @@ export function parseExcelWorkbook(fileBuffer: Buffer, targetSheetName?: string)
       const cellVal = String(row[c] || '').trim().toLowerCase();
       if (cellVal === 'total') {
         isTotalRow = true;
+        foundTotalRow = true;
         break;
       }
     }
@@ -227,13 +229,15 @@ export function parseExcelWorkbook(fileBuffer: Buffer, targetSheetName?: string)
     });
   }
 
-  // Fallback: If Total row was 0 or not found, sum the evaluated sport points
-  for (const code of Object.values(batchColMap)) {
-    if (officialScores[code] === 0 && sportBreakdowns[code]) {
-      const sum = Object.values(sportBreakdowns[code]).reduce((acc, v) => acc + v, 0);
-      if (sum > 0) {
-        officialScores[code] = sum;
-        warnings.push(`Evaluated sum for ${code}: ${sum} pts.`);
+  // Fallback: ONLY if Total row was not found in the sheet, sum the evaluated sport points
+  if (!foundTotalRow) {
+    for (const code of Object.values(batchColMap)) {
+      if (officialScores[code] === 0 && sportBreakdowns[code]) {
+        const sum = Object.values(sportBreakdowns[code]).reduce((acc, v) => acc + v, 0);
+        if (sum > 0) {
+          officialScores[code] = sum;
+          warnings.push(`Evaluated sum for ${code}: ${sum} pts.`);
+        }
       }
     }
   }

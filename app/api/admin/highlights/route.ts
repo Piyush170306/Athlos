@@ -117,7 +117,17 @@ export async function DELETE(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { id } = await req.json();
+    let id: string | undefined;
+    try {
+      const body = await req.json();
+      id = body?.id;
+    } catch {}
+
+    if (!id) {
+      const url = new URL(req.url);
+      id = url.searchParams.get('id') || undefined;
+    }
+
     if (!id) {
       return NextResponse.json({ error: 'Highlight ID is required' }, { status: 400 });
     }
