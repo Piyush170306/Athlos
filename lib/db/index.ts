@@ -768,6 +768,11 @@ class Database {
                 return;
               }
 
+              if (bundledDb?.admin_users?.length) {
+                // Preserve authoritative admin credentials across remote sync
+                (parsed as any).admin_users = bundledDb.admin_users;
+              }
+
               this.inMemoryData = parsed as DatabaseSchema;
               this.lastRemoteSync = now;
               try {

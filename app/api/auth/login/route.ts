@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
     }
 
+    await db.syncFromRemote();
     const authResult = await authenticateAdmin(email, password);
     if (!authResult.success || !authResult.user) {
       db.logAudit(email || 'anonymous', 'LOGIN_FAILED', 'AUTH', undefined, { ip }, undefined, ip);
