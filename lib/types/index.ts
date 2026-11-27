@@ -44,6 +44,15 @@ export interface Sport {
   rulebookUploadedAt?: string;
   rulebookSize?: number;
   rulebookPublished?: boolean;
+  // Separate Boys and Girls Rulebooks for Basketball & Futsal
+  rulebookBoysUrl?: string;
+  rulebookBoysOriginalName?: string;
+  rulebookBoysUploadedAt?: string;
+  rulebookBoysSize?: number;
+  rulebookGirlsUrl?: string;
+  rulebookGirlsOriginalName?: string;
+  rulebookGirlsUploadedAt?: string;
+  rulebookGirlsSize?: number;
 }
 
 export interface Category {

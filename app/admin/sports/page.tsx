@@ -21,6 +21,7 @@ export default function AdminSportsPage() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [activeTargetSportId, setActiveTargetSportId] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<'boys' | 'girls' | 'common'>('common');
 
   const loadData = async () => {
     try {
@@ -91,6 +92,7 @@ export default function AdminSportsPage() {
     const formData = new FormData();
     formData.append('sportId', activeTargetSportId);
     formData.append('file', file);
+    formData.append('category', activeCategory);
 
     try {
       const res = await fetch('/api/admin/sports/rulebook', {
@@ -110,24 +112,26 @@ export default function AdminSportsPage() {
     } finally {
       setUploadingSportId(null);
       setActiveTargetSportId(null);
+      setActiveCategory('common');
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
-  const handleUnpublish = async (sportId: string, sportName: string) => {
-    if (!confirm(`Are you sure you want to unpublish the official rulebook for ${sportName}?`)) {
+  const handleUnpublish = async (sportId: string, sportName: string, category: 'boys' | 'girls' | 'common' = 'common') => {
+    const label = category === 'boys' ? 'Boys ' : category === 'girls' ? 'Girls ' : '';
+    if (!confirm(`Are you sure you want to unpublish the official ${label}rulebook for ${sportName}?`)) {
       return;
     }
 
     try {
-      const res = await fetch(`/api/admin/sports/rulebook?sportId=${sportId}`, {
+      const res = await fetch(`/api/admin/sports/rulebook?sportId=${sportId}&category=${category}`, {
         method: 'DELETE',
       });
       const data = await res.json();
       if (!res.ok) {
         setMessage({ text: data.error || 'Failed to unpublish', type: 'error' });
       } else {
-        setMessage({ text: `Rulebook for ${sportName} unpublished`, type: 'success' });
+        setMessage({ text: `${label}Rulebook for ${sportName} unpublished`, type: 'success' });
         loadData();
       }
     } catch (err) {
@@ -135,8 +139,9 @@ export default function AdminSportsPage() {
     }
   };
 
-  const triggerUpload = (sportId: string) => {
+  const triggerUpload = (sportId: string, category: 'boys' | 'girls' | 'common' = 'common') => {
     setActiveTargetSportId(sportId);
+    setActiveCategory(category);
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
@@ -197,7 +202,10 @@ export default function AdminSportsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {sports.map((sport) => {
           const cats = categories.filter((c) => c.sportId === sport.id);
-          const hasRulebook = Boolean(sport.rulebookUrl && sport.rulebookPublished);
+          const isDual = sport.slug === 'basketball' || sport.slug === 'futsal' || Boolean(sport.rulebookBoysUrl || sport.rulebookGirlsUrl);
+          const hasCommon = Boolean(sport.rulebookUrl && sport.rulebookPublished);
+          const hasBoys = Boolean(sport.rulebookBoysUrl && sport.rulebookPublished);
+          const hasGirls = Boolean(sport.rulebookGirlsUrl && sport.rulebookPublished);
           const isUploading = uploadingSportId === sport.id;
 
           return (
@@ -236,79 +244,225 @@ export default function AdminSportsPage() {
                   </div>
                 </div>
 
-                {/* Rulebook Status Card */}
-                <div className="p-3.5 rounded-lg bg-black/60 border border-surfaceBorder space-y-2.5 my-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
-                      <FileText className="w-3.5 h-3.5 text-athlos-gold" />
-                      <span>Official Rulebook</span>
-                    </span>
-                    {hasRulebook ? (
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-[9px] font-black uppercase tracking-wider">
-                        Published PDF
-                      </span>
-                    ) : (
-                      <span className="px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700 text-slate-400 text-[9px] font-bold uppercase tracking-wider">
-                        No Document
-                      </span>
-                    )}
-                  </div>
-
-                  {hasRulebook ? (
-                    <div className="space-y-2">
-                      <div className="text-[11px] text-slate-300 font-mono truncate">
-                        {sport.rulebookOriginalName || 'official_rulebook.pdf'}
-                      </div>
-                      <div className="flex items-center justify-between text-[10px] text-slate-500">
-                        <span>
-                          {sport.rulebookUploadedAt
-                            ? new Date(sport.rulebookUploadedAt).toLocaleDateString('en-GB')
-                            : 'Uploaded'}
+                {/* Rulebook Status Cards */}
+                {isDual ? (
+                  <div className="space-y-2.5 my-3">
+                    {/* Boys Rulebook */}
+                    <div className="p-3 rounded-lg bg-black/60 border border-surfaceBorder space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
+                          <FileText className="w-3.5 h-3.5 text-athlos-gold" />
+                          <span>Boys Rulebook</span>
                         </span>
-                        {sport.rulebookSize && (
-                          <span>{(sport.rulebookSize / 1024).toFixed(0)} KB</span>
+                        {hasBoys ? (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-[9px] font-black uppercase tracking-wider">
+                            Published PDF
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700 text-slate-400 text-[9px] font-bold uppercase tracking-wider">
+                            No Document
+                          </span>
                         )}
                       </div>
 
-                      <div className="flex items-center space-x-2 pt-1 border-t border-surfaceBorder/60">
-                        <a
-                          href={sport.rulebookUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 py-1.5 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 text-athlos-gold text-[10px] font-bold uppercase tracking-wider flex items-center justify-center space-x-1 transition"
-                        >
-                          <span>View PDF</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
+                      {hasBoys ? (
+                        <div className="space-y-1.5">
+                          <div className="text-[11px] text-slate-300 font-mono truncate">
+                            {sport.rulebookBoysOriginalName || 'boys_rulebook.pdf'}
+                          </div>
+                          <div className="flex items-center justify-between text-[10px] text-slate-500">
+                            <span>
+                              {sport.rulebookBoysUploadedAt
+                                ? new Date(sport.rulebookBoysUploadedAt).toLocaleDateString('en-GB')
+                                : 'Uploaded'}
+                            </span>
+                            {sport.rulebookBoysSize && (
+                              <span>{(sport.rulebookBoysSize / 1024).toFixed(0)} KB</span>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-2 pt-1 border-t border-surfaceBorder/60">
+                            <a
+                              href={sport.rulebookBoysUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 py-1 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 text-athlos-gold text-[10px] font-bold uppercase tracking-wider flex items-center justify-center space-x-1 transition"
+                            >
+                              <span>View</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                            <button
+                              onClick={() => triggerUpload(sport.id, 'boys')}
+                              disabled={isUploading}
+                              className="py-1 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 text-slate-300 text-[10px] font-bold uppercase tracking-wider transition"
+                            >
+                              Replace
+                            </button>
+                            <button
+                              onClick={() => handleUnpublish(sport.id, sport.name, 'boys')}
+                              className="p-1 rounded bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 transition"
+                              title="Unpublish Boys Rulebook"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
                         <button
-                          onClick={() => triggerUpload(sport.id)}
+                          onClick={() => triggerUpload(sport.id, 'boys')}
                           disabled={isUploading}
-                          className="py-1.5 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 text-slate-300 text-[10px] font-bold uppercase tracking-wider transition"
+                          className="w-full py-1.5 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 border border-athlos-gold/30 text-athlos-gold text-[10px] font-black uppercase tracking-wider flex items-center justify-center space-x-1.5 transition"
                         >
-                          Replace
+                          <Upload className="w-3 h-3" />
+                          <span>{isUploading ? 'Uploading...' : 'Upload Boys PDF'}</span>
                         </button>
+                      )}
+                    </div>
+
+                    {/* Girls Rulebook */}
+                    <div className="p-3 rounded-lg bg-black/60 border border-surfaceBorder space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
+                          <FileText className="w-3.5 h-3.5 text-athlos-gold" />
+                          <span>Girls Rulebook</span>
+                        </span>
+                        {hasGirls ? (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-[9px] font-black uppercase tracking-wider">
+                            Published PDF
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700 text-slate-400 text-[9px] font-bold uppercase tracking-wider">
+                            No Document
+                          </span>
+                        )}
+                      </div>
+
+                      {hasGirls ? (
+                        <div className="space-y-1.5">
+                          <div className="text-[11px] text-slate-300 font-mono truncate">
+                            {sport.rulebookGirlsOriginalName || 'girls_rulebook.pdf'}
+                          </div>
+                          <div className="flex items-center justify-between text-[10px] text-slate-500">
+                            <span>
+                              {sport.rulebookGirlsUploadedAt
+                                ? new Date(sport.rulebookGirlsUploadedAt).toLocaleDateString('en-GB')
+                                : 'Uploaded'}
+                            </span>
+                            {sport.rulebookGirlsSize && (
+                              <span>{(sport.rulebookGirlsSize / 1024).toFixed(0)} KB</span>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-2 pt-1 border-t border-surfaceBorder/60">
+                            <a
+                              href={sport.rulebookGirlsUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 py-1 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 text-athlos-gold text-[10px] font-bold uppercase tracking-wider flex items-center justify-center space-x-1 transition"
+                            >
+                              <span>View</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                            <button
+                              onClick={() => triggerUpload(sport.id, 'girls')}
+                              disabled={isUploading}
+                              className="py-1 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 text-slate-300 text-[10px] font-bold uppercase tracking-wider transition"
+                            >
+                              Replace
+                            </button>
+                            <button
+                              onClick={() => handleUnpublish(sport.id, sport.name, 'girls')}
+                              className="p-1 rounded bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 transition"
+                              title="Unpublish Girls Rulebook"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
                         <button
-                          onClick={() => handleUnpublish(sport.id, sport.name)}
-                          className="p-1.5 rounded bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 transition"
-                          title="Unpublish Rulebook"
+                          onClick={() => triggerUpload(sport.id, 'girls')}
+                          disabled={isUploading}
+                          className="w-full py-1.5 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 border border-athlos-gold/30 text-athlos-gold text-[10px] font-black uppercase tracking-wider flex items-center justify-center space-x-1.5 transition"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Upload className="w-3 h-3" />
+                          <span>{isUploading ? 'Uploading...' : 'Upload Girls PDF'}</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-3.5 rounded-lg bg-black/60 border border-surfaceBorder space-y-2.5 my-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
+                        <FileText className="w-3.5 h-3.5 text-athlos-gold" />
+                        <span>Official Rulebook</span>
+                      </span>
+                      {hasCommon ? (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-[9px] font-black uppercase tracking-wider">
+                          Published PDF
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700 text-slate-400 text-[9px] font-bold uppercase tracking-wider">
+                          No Document
+                        </span>
+                      )}
+                    </div>
+
+                    {hasCommon ? (
+                      <div className="space-y-2">
+                        <div className="text-[11px] text-slate-300 font-mono truncate">
+                          {sport.rulebookOriginalName || 'official_rulebook.pdf'}
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] text-slate-500">
+                          <span>
+                            {sport.rulebookUploadedAt
+                              ? new Date(sport.rulebookUploadedAt).toLocaleDateString('en-GB')
+                              : 'Uploaded'}
+                          </span>
+                          {sport.rulebookSize && (
+                            <span>{(sport.rulebookSize / 1024).toFixed(0)} KB</span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center space-x-2 pt-1 border-t border-surfaceBorder/60">
+                          <a
+                            href={sport.rulebookUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 py-1.5 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 text-athlos-gold text-[10px] font-bold uppercase tracking-wider flex items-center justify-center space-x-1 transition"
+                          >
+                            <span>View PDF</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                          <button
+                            onClick={() => triggerUpload(sport.id, 'common')}
+                            disabled={isUploading}
+                            className="py-1.5 px-2 rounded bg-surfaceLight hover:bg-surfaceLight/80 text-slate-300 text-[10px] font-bold uppercase tracking-wider transition"
+                          >
+                            Replace
+                          </button>
+                          <button
+                            onClick={() => handleUnpublish(sport.id, sport.name, 'common')}
+                            className="p-1.5 rounded bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 transition"
+                            title="Unpublish Rulebook"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <button
+                          onClick={() => triggerUpload(sport.id, 'common')}
+                          disabled={isUploading}
+                          className="w-full py-2 px-3 rounded-lg bg-surfaceLight hover:bg-surfaceLight/80 border border-athlos-gold/30 text-athlos-gold text-[11px] font-black uppercase tracking-wider flex items-center justify-center space-x-1.5 transition"
+                        >
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>{isUploading ? 'Uploading...' : 'Upload Rulebook PDF'}</span>
                         </button>
                       </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <button
-                        onClick={() => triggerUpload(sport.id)}
-                        disabled={isUploading}
-                        className="w-full py-2 px-3 rounded-lg bg-surfaceLight hover:bg-surfaceLight/80 border border-athlos-gold/30 text-athlos-gold text-[11px] font-black uppercase tracking-wider flex items-center justify-center space-x-1.5 transition"
-                      >
-                        <Upload className="w-3.5 h-3.5" />
-                        <span>{isUploading ? 'Uploading...' : 'Upload Rulebook PDF'}</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="pt-3 border-t border-surfaceBorder/60 flex items-center justify-between text-[11px] text-slate-500 font-mono">

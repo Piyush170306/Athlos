@@ -34,7 +34,9 @@ export default function SportsRulesPage() {
           const sportCats = categories
             .filter((c) => c.sportId === sport.id)
             .map((c) => c.name);
-          const hasRulebook = Boolean(sport.rulebookUrl && sport.rulebookPublished);
+          const hasBoys = Boolean(sport.rulebookBoysUrl && sport.rulebookPublished);
+          const hasGirls = Boolean(sport.rulebookGirlsUrl && sport.rulebookPublished);
+          const hasCommon = Boolean(sport.rulebookUrl && sport.rulebookPublished);
 
           return (
             <div
@@ -79,8 +81,37 @@ export default function SportsRulesPage() {
               </div>
 
               {/* Rulebook Download / View Link */}
-              <div className="pt-4 border-t border-[#0B1727] flex items-center justify-between text-xs">
-                {hasRulebook ? (
+              <div className="pt-4 border-t border-[#0B1727] flex items-center justify-between text-xs gap-2 flex-wrap">
+                {hasBoys || hasGirls ? (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {hasBoys && (
+                      <a
+                        href={sport.rulebookBoysUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-[#0B1727] border border-[#1D5E91] text-[#F2F7FC] hover:text-[#79C9F2] font-spartan font-bold uppercase tracking-wider transition text-[10px]"
+                        title={`${sport.name} Boys Rulebook (PDF)`}
+                      >
+                        <FileText className="w-3 h-3 text-[#79C9F2]" />
+                        <span>Boys PDF</span>
+                        <ExternalLink className="w-2.5 h-2.5 text-[#79C9F2]" />
+                      </a>
+                    )}
+                    {hasGirls && (
+                      <a
+                        href={sport.rulebookGirlsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-[#0B1727] border border-[#1D5E91] text-[#F2F7FC] hover:text-[#79C9F2] font-spartan font-bold uppercase tracking-wider transition text-[10px]"
+                        title={`${sport.name} Girls Rulebook (PDF)`}
+                      >
+                        <FileText className="w-3 h-3 text-[#79C9F2]" />
+                        <span>Girls PDF</span>
+                        <ExternalLink className="w-2.5 h-2.5 text-[#79C9F2]" />
+                      </a>
+                    )}
+                  </div>
+                ) : hasCommon ? (
                   <a
                     href={sport.rulebookUrl}
                     target="_blank"
@@ -99,7 +130,7 @@ export default function SportsRulesPage() {
 
                 <Link
                   href={`/sports/${sport.slug}`}
-                  className="inline-flex items-center space-x-1 font-spartan font-bold text-xs uppercase tracking-wider text-slate-400 hover:text-[#E6CA83] transition"
+                  className="inline-flex items-center space-x-1 font-spartan font-bold text-xs uppercase tracking-wider text-slate-400 hover:text-[#E6CA83] transition ml-auto"
                 >
                   <span>Rules</span>
                   <ChevronRight className="w-3.5 h-3.5 text-[#C6A45A]" />

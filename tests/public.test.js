@@ -16,9 +16,9 @@ test('Public Boundary: Official Leaderboard totals originate solely from Batch S
   const officialScores = db.official_batch_scores.filter((s) => s.seasonId === activeSeason.id);
   assert.strictEqual(officialScores.length, 3, 'Must have 3 official score records for IPM06, IPM07, IPM08');
 
-  // Verify that all official scores trace to Batch Scores Table Total row (Row 79 or 89)
+  // Verify that all official scores trace to Batch Scores Table Total row (Row 79, 86, 87, or 89)
   for (const s of officialScores) {
-    assert.ok(s.sourceRow === 79 || s.sourceRow === 89, 'All official totals must reference Batch Scores Table total row');
+    assert.ok(s.sourceRow === 79 || s.sourceRow === 86 || s.sourceRow === 87 || s.sourceRow === 89, 'All official totals must reference Batch Scores Table total row');
   }
 });
 

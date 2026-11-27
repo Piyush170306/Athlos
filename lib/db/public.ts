@@ -146,8 +146,13 @@ export function getPublicPolls(seasonId: string, options?: { todayOnly?: boolean
   });
 
   if (options?.todayOnly) {
-    const todayStr = '2026-11-09';
-    results = results.filter((p) => p.match && p.match.status === 'UPCOMING' && p.match.scheduledDate === todayStr);
+    const today = new Date().toISOString().split('T')[0];
+    const todayMatches = results.filter((p) => p.status === 'OPEN' && p.match && p.match.status === 'UPCOMING' && p.match.scheduledDate === today);
+    if (todayMatches.length > 0) {
+      results = todayMatches;
+    } else {
+      results = results.filter((p) => p.status === 'OPEN' && (!p.match || p.match.status === 'UPCOMING'));
+    }
   }
 
   return results;

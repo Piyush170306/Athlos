@@ -10,7 +10,7 @@ export const revalidate = 0;
 export default function PollsPage() {
   const activeSeason = getActiveSeason();
   const allPolls = getPublicPolls(activeSeason.id);
-  const openPolls = allPolls.filter((p) => p.status === 'OPEN' && p.match && p.match.status === 'UPCOMING' && p.match.scheduledDate === '2026-11-09');
+  const openPolls = allPolls.filter((p) => p.status === 'OPEN' && (!p.match || p.match.status === 'UPCOMING'));
   const closedPolls = allPolls.filter((p) => p.status === 'CLOSED' || (p.match && p.match.status === 'COMPLETED'));
 
   return (

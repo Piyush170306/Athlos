@@ -697,6 +697,11 @@ class Database {
     this.save(initial);
   }
 
+  // Replace full database state with an approved master schema
+  public replaceAll(data: DatabaseSchema): void {
+    this.save(data);
+  }
+
   // Universal Serverless Remote Persistence (Vercel KV / Upstash Redis / Remote Store)
   private lastRemoteSync: number = 0;
 
@@ -721,6 +726,46 @@ class Database {
           if (body && body.result) {
             const parsed = typeof body.result === 'string' ? JSON.parse(body.result) : body.result;
             if (parsed && Array.isArray(parsed.seasons) && Array.isArray(parsed.matches)) {
+              // Check if bundled database exists and is newer than remote store
+              let bundledDb: DatabaseSchema | null = null;
+              if (fs.existsSync(BUNDLED_DB_FILE)) {
+                try {
+                  bundledDb = JSON.parse(fs.readFileSync(BUNDLED_DB_FILE, 'utf-8'));
+                } catch {}
+              }
+
+              const getLatestTimestamp = (dbObj: any): number => {
+                let maxTs = 0;
+                if (dbObj?.import_batches?.[0]?.approvedAt) {
+                  maxTs = Math.max(maxTs, new Date(dbObj.import_batches[0].approvedAt).getTime());
+                }
+                if (dbObj?.import_batches?.[0]?.uploadedAt) {
+                  maxTs = Math.max(maxTs, new Date(dbObj.import_batches[0].uploadedAt).getTime());
+                }
+                if (dbObj?.audit_logs?.length) {
+                  const lastAudit = dbObj.audit_logs[dbObj.audit_logs.length - 1];
+                  const aTs = lastAudit?.timestamp || lastAudit?.createdAt;
+                  if (aTs) {
+                    maxTs = Math.max(maxTs, new Date(aTs).getTime());
+                  }
+                }
+                return maxTs;
+              };
+
+              const remoteTs = getLatestTimestamp(parsed);
+              const bundledTs = bundledDb ? getLatestTimestamp(bundledDb) : 0;
+
+              if (bundledDb && bundledTs > remoteTs) {
+                // Bundled database from fresh deployment is newer than remote store -> adopt and sync
+                this.inMemoryData = bundledDb;
+                this.lastRemoteSync = now;
+                try {
+                  fs.writeFileSync(TMP_DB_FILE, JSON.stringify(bundledDb, null, 2), 'utf-8');
+                } catch {}
+                this.saveToRemote().catch(() => {});
+                return;
+              }
+
               this.inMemoryData = parsed as DatabaseSchema;
               this.lastRemoteSync = now;
               try {
