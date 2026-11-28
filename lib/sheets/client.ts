@@ -243,8 +243,8 @@ export async function syncGoogleSheet(
           db.update('matches', existing.id, {
             scheduledDate: row.dateStr || existing.scheduledDate,
             timeSlot: row.timeSlot || existing.timeSlot,
-            rawScore: row.rawScore !== undefined ? row.rawScore : existing.rawScore,
-            winnerBatchId: winnerBatchId !== undefined ? winnerBatchId : existing.winnerBatchId,
+            rawScore: row.rawScore || undefined,
+            winnerBatchId: winnerBatchId || undefined,
             status: row.status,
             sourceRowKey: targetRowKey,
             updatedAt: now,
@@ -273,18 +273,48 @@ export async function syncGoogleSheet(
     }
 
     // 5. Update Official Batch Scores (Batch Scores Table Authority)
+    const completedSeasonMatches = db.query(
+      'matches',
+      (m) => m.seasonId === activeSeason.id && m.status === 'COMPLETED'
+    );
+    const winsMap: Record<string, number> = {};
+    for (const m of completedSeasonMatches) {
+      if (m.winnerBatchId && m.winnerBatchId !== 'DRAW') {
+        winsMap[m.winnerBatchId] = (winsMap[m.winnerBatchId] || 0) + 1;
+      }
+    }
+
     for (const [code, pts] of Object.entries(parsedCurrent.officialScores)) {
+      const bId = batchIdMap[code];
       const existingScore = db.query(
         'official_batch_scores',
-        (s) => s.seasonId === activeSeason.id && s.batchCode === code
+        (s) => s.seasonId === activeSeason.id && (s.batchCode === code || Boolean(bId && s.batchId === bId))
       )[0];
 
       const breakdown = parsedCurrent.sportBreakdowns[code] || existingScore?.breakdownBySport || {};
+      const batchWins = (bId && winsMap[bId]) || 0;
 
       if (existingScore) {
         db.update('official_batch_scores', existingScore.id, {
           totalPoints: pts,
+          wins: batchWins,
           breakdownBySport: breakdown,
+          lastApprovedAt: now,
+          lastApprovedBy: `sheets_sync:${actor}`,
+        });
+      } else if (bId) {
+        db.insert('official_batch_scores', {
+          id: `obs-${activeSeason.id}-${code.toLowerCase()}`,
+          seasonId: activeSeason.id,
+          batchId: bId,
+          batchCode: code,
+          totalPoints: pts,
+          wins: batchWins,
+          rank: 1,
+          tieBroken: false,
+          breakdownBySport: breakdown,
+          sourceSheet: currentSheetName || '2026-27',
+          sourceRow: 87,
           lastApprovedAt: now,
           lastApprovedBy: `sheets_sync:${actor}`,
         });

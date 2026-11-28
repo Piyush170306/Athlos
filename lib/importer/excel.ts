@@ -135,6 +135,7 @@ export function parseExcelWorkbook(fileBuffer: Buffer, targetSheetName?: string)
   // 2. Initialise official scores and sport breakdown maps
   const officialScores: Record<string, number> = {};
   const sportBreakdowns: Record<string, Record<string, number>> = {};
+  const explicitTotals: Record<string, number> = {};
   for (const code of Object.values(batchColMap)) {
     officialScores[code] = 0;
     sportBreakdowns[code] = {};
@@ -169,25 +170,11 @@ export function parseExcelWorkbook(fileBuffer: Buffer, targetSheetName?: string)
       for (const [colIdx, code] of Object.entries(batchColMap)) {
         const rawTotal = row[Number(colIdx)];
         const numTotal = parseFloat(rawTotal);
-        if (!isNaN(numTotal)) {
-          officialScores[code] = numTotal;
+        if (!isNaN(numTotal) && numTotal > 0) {
+          explicitTotals[code] = numTotal;
         }
       }
       continue;
-    }
-
-    // Check sport points row in Batch Scores Table (cols 7 to 11)
-    const sportColVal = String(row[7] || '').trim();
-    if (sportColVal && sportColVal.toLowerCase() !== 'total' && sportColVal.toLowerCase() !== 'winner') {
-      const sportSlug = sportColVal.toLowerCase().replace(/[^a-z0-9]/g, '-');
-      for (const [colIdx, code] of Object.entries(batchColMap)) {
-        const rawPts = row[Number(colIdx)];
-        const numPts = parseFloat(rawPts);
-        if (!isNaN(numPts)) {
-          if (!sportBreakdowns[code]) sportBreakdowns[code] = {};
-          sportBreakdowns[code][sportSlug] = (sportBreakdowns[code][sportSlug] || 0) + numPts;
-        }
-      }
     }
 
     // --- Raw Scores Table parsing (Columns 0 to 6) ---
@@ -215,70 +202,129 @@ export function parseExcelWorkbook(fileBuffer: Buffer, targetSheetName?: string)
       if (normDate) currentDateStr = normDate;
     }
 
-    // If there is no contenders/event cell, skip row
-    if (!cellContenders || !String(cellContenders).trim()) {
-      continue;
-    }
+    // Determine sport for this row (Column 7 / H or forward-filled currentSport)
+    const sportColVal = String(row[7] || '').trim();
+    const effectiveSport =
+      sportColVal && sportColVal.toLowerCase() !== 'winner' && sportColVal.toLowerCase() !== 'total'
+        ? sportColVal
+        : currentSport;
+    const sportSlug = effectiveSport
+      ? effectiveSport.toLowerCase().replace(/[^a-z0-9]/g, '-')
+      : 'general';
 
-    const contendersRaw = String(cellContenders).trim();
+    // Parse contenders and winner if contenders cell exists
+    let batchACode: string | undefined;
+    let batchBCode: string | undefined;
+    let winnerCode: string | undefined;
+    let rawScore: string | undefined;
+    let contendersRaw = '';
 
-    // Parse batches from contenders (e.g. "IPM07 vs IPM06" or "IPM08 vs. IPM07")
-    const matchBatches = contendersRaw.match(/IPM\d+/gi) || [];
-    const batchACode = matchBatches[0] ? matchBatches[0].toUpperCase() : undefined;
-    const batchBCode = matchBatches[1] ? matchBatches[1].toUpperCase() : undefined;
+    if (cellContenders && String(cellContenders).trim()) {
+      contendersRaw = String(cellContenders).trim();
 
-    // Normalise winner
-    let winnerCode = cellWinner ? String(cellWinner).trim().toUpperCase() : undefined;
-    if (winnerCode && !winnerCode.startsWith('IPM') && winnerCode !== 'DRAW') {
-      const foundWinner = winnerCode.match(/IPM\d+/i);
-      winnerCode = foundWinner ? foundWinner[0].toUpperCase() : winnerCode;
-    }
-    if (winnerCode && !winnerCode.startsWith('IPM') && winnerCode !== 'DRAW') {
-      winnerCode = undefined;
-    }
+      // Parse batches from contenders (e.g. "IPM07 vs IPM06" or "IPM08 vs. IPM07")
+      const matchBatches = contendersRaw.match(/IPM\d+/gi) || [];
+      batchACode = matchBatches[0] ? matchBatches[0].toUpperCase() : undefined;
+      batchBCode = matchBatches[1] ? matchBatches[1].toUpperCase() : undefined;
 
-    let rawScore = cellScore ? String(cellScore).trim() : undefined;
-    // Discard non-score note placeholders like "10 eve" or "12 eve"
-    if (rawScore && /^\d+\s+eve$/i.test(rawScore)) {
-      rawScore = undefined;
-    }
+      // Normalise winner
+      winnerCode = cellWinner ? String(cellWinner).trim().toUpperCase() : undefined;
+      if (winnerCode && !winnerCode.startsWith('IPM') && winnerCode !== 'DRAW') {
+        const foundWinner = winnerCode.match(/IPM\d+/i);
+        winnerCode = foundWinner ? foundWinner[0].toUpperCase() : winnerCode;
+      }
+      if (winnerCode && !winnerCode.startsWith('IPM') && winnerCode !== 'DRAW') {
+        winnerCode = undefined;
+      }
 
-    // Determine Status
-    // A match is COMPLETED only if a valid winner or score is recorded
-    let status: 'UPCOMING' | 'COMPLETED' | 'CANCELLED' = 'UPCOMING';
-    if (winnerCode || (rawScore && rawScore !== '0' && rawScore !== 'undefined')) {
-      status = 'COMPLETED';
-    }
+      rawScore = cellScore ? String(cellScore).trim() : undefined;
+      // Discard non-score note placeholders like "10 eve" or "12 eve"
+      if (rawScore && /^\d+\s+eve$/i.test(rawScore)) {
+        rawScore = undefined;
+      }
 
-    // Ensure formatName is strictly Boys or Girls (never Open)
-    const finalFormat = currentFormat.toLowerCase().includes('girl') ? 'Girls' : 'Boys';
-
-    matches.push({
-      rowNumber: rowNum,
-      dateStr: currentDateStr || undefined,
-      sportName: currentSport || 'General',
-      formatName: finalFormat,
-      timeSlot: currentTimeSlot || undefined,
-      contendersRaw,
-      batchACode,
-      batchBCode,
-      rawScore,
-      winnerCode,
-      status,
-      sourceKey: `row-${rowNum}-${currentSport}-${contendersRaw}`.toLowerCase().replace(/\s+/g, '-'),
-    });
-  }
-
-  // Fallback: ONLY if Total row was not found in the sheet, sum the evaluated sport points
-  if (!foundTotalRow) {
-    for (const code of Object.values(batchColMap)) {
-      if (officialScores[code] === 0 && sportBreakdowns[code]) {
-        const sum = Object.values(sportBreakdowns[code]).reduce((acc, v) => acc + v, 0);
-        if (sum > 0) {
-          officialScores[code] = sum;
-          warnings.push(`Evaluated sum for ${code}: ${sum} pts.`);
+      // If winner is not explicitly stated in Column G, infer from rawScore if score is decisive
+      if (!winnerCode && rawScore && batchACode && batchBCode) {
+        const scoreMatch = rawScore.match(/^(\d+)\s*[-:]\s*(\d+)$/);
+        if (scoreMatch) {
+          const sA = parseInt(scoreMatch[1], 10);
+          const sB = parseInt(scoreMatch[2], 10);
+          if (sA > sB) winnerCode = batchACode;
+          else if (sB > sA) winnerCode = batchBCode;
+          else if (sA === sB) winnerCode = 'DRAW';
         }
       }
+
+      // Determine Status
+      // A match is COMPLETED only if a valid winner or score is recorded
+      let status: 'UPCOMING' | 'COMPLETED' | 'CANCELLED' = 'UPCOMING';
+      if (winnerCode || (rawScore && rawScore !== '0' && rawScore !== 'undefined')) {
+        status = 'COMPLETED';
+      }
+
+      // Ensure formatName is strictly Boys or Girls (never Open)
+      const finalFormat = currentFormat.toLowerCase().includes('girl') ? 'Girls' : 'Boys';
+
+      matches.push({
+        rowNumber: rowNum,
+        dateStr: currentDateStr || undefined,
+        sportName: currentSport || 'General',
+        formatName: finalFormat,
+        timeSlot: currentTimeSlot || undefined,
+        contendersRaw,
+        batchACode,
+        batchBCode,
+        rawScore,
+        winnerCode,
+        status,
+        sourceKey: `row-${rowNum}-${currentSport}-${contendersRaw}`.toLowerCase().replace(/\s+/g, '-'),
+      });
+    }
+
+    // --- Batch Scores Table points calculation for this row (Cols 7 to 11) ---
+    for (const [colIdx, code] of Object.entries(batchColMap)) {
+      let awardedPts = 0;
+      const rawPts = row[Number(colIdx)];
+      const numPts = parseFloat(rawPts);
+
+      if (!isNaN(numPts) && numPts > 0) {
+        // 1. Literal number in cell (e.g. manual points or historical archive values)
+        awardedPts = numPts;
+      } else {
+        // 2. Check cell formula in sheet (e.g. IF($G3="IPM06", 2, ))
+        const cellAddr = XLSX.utils.encode_cell({ r, c: Number(colIdx) });
+        const cell = sheet[cellAddr];
+        if (cell && cell.f) {
+          const m = cell.f.match(/IF\([^"]*"([^"]+)"\s*,\s*(\d+(?:\.\d+)?)/i);
+          if (m) {
+            const targetBatch = m[1].toUpperCase();
+            const ptsVal = parseFloat(m[2]);
+            if (winnerCode === targetBatch) {
+              awardedPts = ptsVal;
+            }
+          }
+        } else if (winnerCode === code) {
+          // 3. Official Tournament Rule: Match win awards 2 points in that sport
+          awardedPts = 2;
+        }
+      }
+
+      if (awardedPts > 0) {
+        if (!sportBreakdowns[code]) sportBreakdowns[code] = {};
+        sportBreakdowns[code][sportSlug] = (sportBreakdowns[code][sportSlug] || 0) + awardedPts;
+      }
+    }
+  }
+
+  // Final official scores: Authoritative sum of sport points from Batch Scores Table
+  for (const code of Object.values(batchColMap)) {
+    const sum = Object.values(sportBreakdowns[code] || {}).reduce((acc, v) => acc + v, 0);
+    if (sum > 0) {
+      officialScores[code] = sum;
+    } else if (explicitTotals[code] !== undefined && explicitTotals[code] > 0) {
+      officialScores[code] = explicitTotals[code];
+    } else {
+      officialScores[code] = 0;
     }
   }
 
