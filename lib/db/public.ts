@@ -111,11 +111,12 @@ export function getPublicAnnouncements(seasonId: string) {
 }
 
 export function getPublicPolls(seasonId: string, options?: { todayOnly?: boolean }) {
-  const polls = db.query('polls', (p) => p.seasonId === seasonId && p.status === 'OPEN');
+  const polls = db.query('polls', (p) => p.seasonId === seasonId);
   const votes = db.getTable('poll_votes');
   const batches = db.getTable('batches');
   const matches = db.getTable('matches');
   const sports = db.getTable('sports');
+  const now = new Date();
 
   let results = polls.map((poll) => {
     const pollVotes = votes.filter((v) => v.pollId === poll.id);
@@ -123,6 +124,17 @@ export function getPublicPolls(seasonId: string, options?: { todayOnly?: boolean
 
     const match = matches.find((m) => m.id === poll.matchId);
     const sport = match ? sports.find((s) => s.id === match.sportId) : null;
+
+    // Check deadline closure
+    let isClosed = poll.status === 'CLOSED';
+    if (!isClosed && match && (match.status === 'COMPLETED' || match.status === 'CANCELLED')) {
+      isClosed = true;
+    }
+    if (!isClosed && poll.closesAt) {
+      if (now >= new Date(poll.closesAt)) {
+        isClosed = true;
+      }
+    }
 
     const batchOptions = poll.eligibleBatches.map((batchId) => {
       const batch = batches.find((b) => b.id === batchId);
@@ -138,11 +150,26 @@ export function getPublicPolls(seasonId: string, options?: { todayOnly?: boolean
 
     return {
       ...poll,
+      status: (isClosed ? 'CLOSED' : 'OPEN') as 'OPEN' | 'CLOSED',
       match,
       sport,
       totalVotes,
       options: batchOptions,
     };
+  });
+
+  // Sort: upcoming open matches first by scheduledDate ASC, then timeSlot (Morning first)
+  results.sort((a, b) => {
+    if (a.status !== b.status) {
+      return a.status === 'OPEN' ? -1 : 1;
+    }
+    const dateA = a.match?.scheduledDate || a.matchDate || '9999-99-99';
+    const dateB = b.match?.scheduledDate || b.matchDate || '9999-99-99';
+    if (dateA !== dateB) return dateA.localeCompare(dateB);
+
+    const slotA = (a.match?.timeSlot || a.session || '').toLowerCase().includes('morning') ? 0 : 1;
+    const slotB = (b.match?.timeSlot || b.session || '').toLowerCase().includes('morning') ? 0 : 1;
+    return slotA - slotB;
   });
 
   if (options?.todayOnly) {

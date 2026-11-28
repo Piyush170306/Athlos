@@ -389,6 +389,12 @@ export default function LiveGoogleSheetsSyncPage() {
             <li className="flex items-start space-x-2">
               <span className="text-athlos-gold font-bold">✓</span>
               <span>
+                <strong className="text-white">Multi-Entity Synchronization:</strong> Synchronizes fixtures, Row 87 batch scores, Prediction Polls (with strict Morning 6:00 AM IST & Evening 6:00 PM IST closing deadlines), tournament highlights, and user notifications.
+              </span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <span className="text-athlos-gold font-bold">✓</span>
+              <span>
                 <strong className="text-white">Edge Cache Invalidation:</strong> Successful synchronizations atomically invalidate Next.js caches on Vercel without requiring code redeployments.
               </span>
             </li>

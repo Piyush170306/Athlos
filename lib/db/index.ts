@@ -20,6 +20,7 @@ import {
   AuditLog,
   AdminUser,
   GoogleSheetsConfig,
+  TournamentNotification,
 } from '@/lib/types';
 
 interface DatabaseSchema {
@@ -36,6 +37,7 @@ interface DatabaseSchema {
   announcements: Announcement[];
   polls: Poll[];
   poll_votes: PollVote[];
+  notifications: TournamentNotification[];
   audit_logs: AuditLog[];
   admin_users: AdminUser[];
   google_sheets_config: GoogleSheetsConfig[];
@@ -481,7 +483,7 @@ function getInitialData(): DatabaseSchema {
       email: process.env.INITIAL_ADMIN_EMAIL || 'admin@athlos.edu',
       passwordHash,
       role: 'SUPER_ADMIN',
-      mustChangePassword: true,
+      mustChangePassword: false,
       tokenVersion: 2,
       createdAt: now,
       updatedAt: now,
@@ -514,6 +516,7 @@ function getInitialData(): DatabaseSchema {
     announcements,
     polls: [initialPoll],
     poll_votes: [],
+    notifications: [],
     audit_logs: [
       {
         id: 'audit-init',
@@ -551,6 +554,7 @@ class Database {
         if (!preferBundled) {
           const content = fs.readFileSync(TMP_DB_FILE, 'utf-8');
           this.inMemoryData = JSON.parse(content);
+          if (!this.inMemoryData!.notifications) this.inMemoryData!.notifications = [];
           return this.inMemoryData!;
         }
       } catch (err) {
@@ -563,6 +567,7 @@ class Database {
       try {
         const content = fs.readFileSync(BUNDLED_DB_FILE, 'utf-8');
         this.inMemoryData = JSON.parse(content);
+        if (!this.inMemoryData!.notifications) this.inMemoryData!.notifications = [];
         return this.inMemoryData!;
       } catch (err) {
         console.error('Failed to read bundled database file:', err);

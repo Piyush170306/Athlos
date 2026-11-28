@@ -46,49 +46,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [adminUser, setAdminUser] = useState<any>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
-  // Forced password rotation states for first login
-  const [curPw, setCurPw] = useState('');
-  const [newPw, setNewPw] = useState('');
-  const [confirmPw, setConfirmPw] = useState('');
-  const [showCurPw, setShowCurPw] = useState(false);
-  const [showNewPw, setShowNewPw] = useState(false);
-  const [pwError, setPwError] = useState<string | null>(null);
-  const [pwSuccess, setPwSuccess] = useState<string | null>(null);
-  const [pwLoading, setPwLoading] = useState(false);
-
-  const handlePasswordRotate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setPwError(null);
-    setPwSuccess(null);
-    setPwLoading(true);
-
-    try {
-      const res = await fetch('/api/auth/change-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          currentPassword: curPw,
-          newPassword: newPw,
-          confirmPassword: confirmPw,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        setPwError(data.error || 'Failed to update password');
-      } else {
-        setPwSuccess('Password successfully updated! You are now authorized to continue.');
-        setTimeout(() => {
-          setAdminUser({ ...adminUser, mustChangePassword: false });
-        }, 1200);
-      }
-    } catch {
-      setPwError('A network error occurred. Please try again.');
-    } finally {
-      setPwLoading(false);
-    }
-  };
-
   const isAuthPage =
     pathname === '/admin/login' ||
     pathname === '/admin/forgot-password' ||
@@ -96,6 +53,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (isAuthPage) {
+      setCheckingAuth(false);
+      return;
+    }
+
+    // If session is already verified and active in memory, allow seamless section navigation without re-fetching
+    if (adminUser) {
       setCheckingAuth(false);
       return;
     }
@@ -117,7 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     checkAuth();
-  }, [pathname, isAuthPage, router]);
+  }, [pathname, isAuthPage, router, adminUser]);
 
   const handleLogout = async () => {
     try {
@@ -237,108 +200,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main Content Area */}
       <main className="flex-1 p-4 sm:p-8 overflow-y-auto max-w-7xl">{children}</main>
 
-      {/* Mandatory First-Time Password Rotation Modal */}
-      {adminUser?.mustChangePassword && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-md bg-[#0A1220] border border-athlos-gold/50 rounded-2xl p-6 sm:p-8 shadow-glow-gold space-y-6">
-            <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-xl bg-amber-950/60 border border-athlos-gold/60 flex items-center justify-center mx-auto text-athlos-gold">
-                <Key className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-black uppercase tracking-wider text-white">
-                Set Unique Admin Password
-              </h2>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Initial credential login detected. For tournament security, please replace the temporary password with a private, unique administrator password.
-              </p>
-            </div>
-
-            {pwError && (
-              <div className="p-3 rounded-lg bg-rose-950/70 border border-rose-800 text-rose-300 text-xs flex items-center space-x-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{pwError}</span>
-              </div>
-            )}
-
-            {pwSuccess && (
-              <div className="p-3 rounded-lg bg-emerald-950/70 border border-emerald-800 text-emerald-300 text-xs flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 shrink-0" />
-                <span>{pwSuccess}</span>
-              </div>
-            )}
-
-            <form onSubmit={handlePasswordRotate} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Current Password (Athlos@2026)
-                </label>
-                <div className="relative">
-                  <input
-                    type={showCurPw ? 'text' : 'password'}
-                    required
-                    value={curPw}
-                    onChange={(e) => setCurPw(e.target.value)}
-                    className="w-full px-3 py-2 bg-surfaceLight border border-surfaceBorder rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-athlos-gold pr-9"
-                    placeholder="Enter current password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCurPw(!showCurPw)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-                  >
-                    {showCurPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  New Unique Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showNewPw ? 'text' : 'password'}
-                    required
-                    value={newPw}
-                    onChange={(e) => setNewPw(e.target.value)}
-                    className="w-full px-3 py-2 bg-surfaceLight border border-surfaceBorder rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-athlos-gold pr-9"
-                    placeholder="Min. 8 chars (uppercase, lowercase, number)"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPw(!showNewPw)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-                  >
-                    {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Confirm New Password
-                </label>
-                <input
-                  type={showNewPw ? 'text' : 'password'}
-                  required
-                  value={confirmPw}
-                  onChange={(e) => setConfirmPw(e.target.value)}
-                  className="w-full px-3 py-2 bg-surfaceLight border border-surfaceBorder rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-athlos-gold"
-                  placeholder="Re-enter new password"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={pwLoading}
-                className="w-full py-2.5 rounded-lg text-xs font-black uppercase tracking-wider bg-athlos-gold hover:bg-yellow-400 text-black transition shadow-glow-gold disabled:opacity-50 mt-2"
-              >
-                {pwLoading ? 'Securing Account...' : 'Save New Password & Continue'}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

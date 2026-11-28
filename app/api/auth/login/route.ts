@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       secure: isHttps,
       sameSite: 'lax',
       path: '/',
-      maxAge: 8 * 60 * 60, // 8 hours
+      maxAge: 12 * 60 * 60, // 12 hours persistent session
     });
 
     return response;

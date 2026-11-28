@@ -66,9 +66,15 @@ export default function PollsPage() {
                     <span className="font-semibold">{poll.totalVotes} Total Votes</span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-white mb-4 leading-snug">
+                  <h3 className="text-lg font-bold text-white mb-2 leading-snug">
                     {poll.title}
                   </h3>
+
+                  {/* IST Closing Deadline Badge */}
+                  <div className="flex items-center space-x-1.5 text-[11px] text-amber-300 font-mono bg-amber-950/40 border border-amber-800/60 px-2.5 py-1 rounded-lg mb-4">
+                    <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <span>Predictions close: <strong className="text-white">{poll.closingDisplay || 'Scheduled match deadline'}</strong></span>
+                  </div>
 
                   {/* Percentage Bars */}
                   <div className="space-y-3 mb-6">
@@ -124,7 +130,7 @@ export default function PollsPage() {
                 className="esports-card rounded-xl p-5 border-surfaceBorder opacity-80"
               >
                 <div className="flex justify-between text-xs text-slate-500 mb-2 font-mono">
-                  <span>POLL CLOSED</span>
+                  <span className="text-amber-500/90 font-semibold">{poll.closingDisplay ? `Closed: ${poll.closingDisplay}` : 'POLL CLOSED'}</span>
                   <span>{poll.totalVotes} Total Votes</span>
                 </div>
                 <h4 className="font-bold text-sm text-slate-200 mb-3">{poll.title}</h4>

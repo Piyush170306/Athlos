@@ -5324,10 +5324,10 @@
       "email": "admin@athlos.edu",
       "passwordHash": "$2a$10$hRTbg673ghBZp2lY1eOEI.53LASGmmoRo1g.zgiKF3oHstfD9ujLu",
       "role": "SUPER_ADMIN",
-      "mustChangePassword": true,
+      "mustChangePassword": false,
       "tokenVersion": 2,
       "createdAt": "2026-11-26T08:37:37.131Z",
-      "updatedAt": "2026-11-27T18:10:04.226Z"
+      "updatedAt": "2026-11-28T05:30:00.000Z"
     }
   ],
   "google_sheets_config": [
@@ -5370,5 +5370,6 @@
         }
       ]
     }
-  ]
+  ],
+  "notifications": []
 }

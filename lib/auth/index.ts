@@ -74,7 +74,7 @@ export function createAdminSessionToken(user: AdminUser): string {
     role: user.role,
     tokenVersion: user.tokenVersion || 1,
   };
-  return jwt.sign(payload, getSessionSecret(), { expiresIn: '8h' });
+  return jwt.sign(payload, getSessionSecret(), { expiresIn: '12h' });
 }
 
 export function verifyAdminSessionToken(token: string): {

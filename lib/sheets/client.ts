@@ -5,9 +5,10 @@ import * as XLSX from 'xlsx';
 import { db } from '@/lib/db';
 import { getActiveSeason } from '@/lib/db/public';
 import { parseExcelWorkbook } from '@/lib/importer/excel';
-import { syncHighlightsFromMatches, syncPollsFromMatches } from '@/lib/importer/approval';
+import { syncHighlightsFromMatches } from '@/lib/importer/approval';
 import { revalidatePath } from 'next/cache';
-import { Match, OfficialBatchScore } from '@/lib/types';
+import { Match, OfficialBatchScore, Poll, TournamentNotification } from '@/lib/types';
+import { calculatePollDeadline, isPollClosed } from '@/lib/polls/deadlines';
 
 let isSyncRunning = false;
 
@@ -19,6 +20,9 @@ export interface SyncResult {
   updatedCount?: number;
   unchangedCount?: number;
   skippedCount?: number;
+  pollsCount?: number;
+  highlightsCount?: number;
+  notificationsCount?: number;
   errors?: string[];
   officialScores?: Record<string, number>;
   lastAttemptAt: string;
@@ -294,9 +298,9 @@ export async function syncGoogleSheet(
       db.update('official_batch_scores', score.id, { rank: idx + 1 });
     });
 
-    // 6. Update Highlights and Polls from reconciled match results
-    syncHighlightsFromMatches(activeSeason.id);
-    syncPollsFromMatches(activeSeason.id);
+    // 6. Comprehensive Multi-Entity Sync: Prediction Polls (IST Deadlines), Highlights & Deduplicated Notifications
+    const currentMatches = db.query('matches', (m) => m.seasonId === activeSeason.id);
+    const entitySync = syncTournamentEntities(activeSeason.id, currentMatches, wb);
 
     // 7. Synchronize Historical Seasons if present in the Google Spreadsheet
     const historicalSheetConfigs: Array<{ sheet: string; seasonSlug: string; seasonId: string; totalRowHint: number }> = [
@@ -389,15 +393,19 @@ export async function syncGoogleSheet(
       revalidatePath('/polls');
       revalidatePath('/history');
       revalidatePath('/sports/[slug]', 'page');
+      revalidatePath('/api/public/notifications');
     } catch {}
 
     return {
       success: true,
-      message: `Google Sheets live sync complete: ${addedCount} additions, ${updatedCount} updates, ${unchangedCount} unchanged, ${skippedCount} retained.`,
+      message: `Google Sheets live sync complete: ${addedCount} additions, ${updatedCount} updates, ${unchangedCount} unchanged, ${entitySync.pollsSynced} polls active, ${entitySync.highlightsSynced} highlights, ${entitySync.notificationsCreated} notifications generated.`,
       addedCount,
       updatedCount,
       unchangedCount,
       skippedCount,
+      pollsCount: entitySync.pollsSynced,
+      highlightsCount: entitySync.highlightsSynced,
+      notificationsCount: entitySync.notificationsCreated,
       errors,
       officialScores: parsedCurrent.officialScores,
       lastAttemptAt: startedAt,
@@ -442,4 +450,248 @@ export async function syncGoogleSheet(
   } finally {
     isSyncRunning = false;
   }
+}
+
+function syncTournamentEntities(
+  seasonId: string,
+  allMatches: Match[],
+  wb: XLSX.WorkBook
+): {
+  pollsSynced: number;
+  newPollsCount: number;
+  highlightsSynced: number;
+  notificationsCreated: number;
+} {
+  const batches = db.query('batches', (b) => b.seasonId === seasonId);
+  const sports = db.query('sports', (s) => s.seasonId === seasonId);
+  const now = new Date();
+  let pollsSynced = 0;
+  let newPollsCount = 0;
+  let notificationsCreated = 0;
+
+  // 1. Process Dedicated Prediction Polls Sheet if present in Google Spreadsheet
+  const pollSheetName = wb.SheetNames.find(
+    (n) => n.toLowerCase().includes('poll') || n.toLowerCase().includes('prediction')
+  );
+  if (pollSheetName) {
+    try {
+      const sheet = wb.Sheets[pollSheetName];
+      const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+      for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
+        const matchId = String(row[1] || '').trim();
+        const customTitle = String(row[4] || row[0] || '').trim();
+        const customClosing = String(row[8] || '').trim();
+        if (matchId) {
+          const existingPoll = db.query('polls', (p) => p.matchId === matchId)[0];
+          if (existingPoll && customTitle) {
+            db.update('polls', existingPoll.id, {
+              title: customTitle,
+              closingDisplay: customClosing || existingPoll.closingDisplay,
+            });
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Dedicated Polls sheet parsing note:', err);
+    }
+  }
+
+  // 2. Synchronize all Prediction Polls from Fixtures
+  for (const match of allMatches) {
+    const bA = batches.find((b) => b.id === match.batchAId);
+    const bB = batches.find((b) => b.id === match.batchBId);
+    if (!bA || !bB) continue;
+
+    const sport = sports.find((s) => s.id === match.sportId);
+    const sportName = sport ? sport.name : 'Match';
+    const catName = match.categoryId === 'cat-girls' ? 'Girls' : 'Boys';
+
+    const deadline = calculatePollDeadline(match.scheduledDate, match.timeSlot);
+    const deadlineDate = new Date(deadline.closesAt);
+    const isPastDeadline = now >= deadlineDate;
+    const isMatchEnded = match.status === 'COMPLETED' || match.status === 'CANCELLED';
+    const computedStatus = isPastDeadline || isMatchEnded ? 'CLOSED' : 'OPEN';
+
+    const pollId = `poll-${match.id}`;
+    let existingPoll = db.findById('polls', pollId);
+    if (!existingPoll) {
+      existingPoll = db.query('polls', (p) => p.matchId === match.id)[0];
+    }
+
+    if (!existingPoll) {
+      // Create new poll
+      const newPoll: Poll = {
+        id: pollId,
+        matchId: match.id,
+        seasonId,
+        title: `${sportName} Prediction: ${bA.code} vs ${bB.code}`,
+        description: `Predict the winner for ${sportName} (${catName}) between ${bA.code} and ${bB.code} scheduled for ${match.scheduledDate} (${match.timeSlot}).`,
+        eligibleBatches: [bA.id, bB.id],
+        sport: sportName,
+        category: catName,
+        matchDate: match.scheduledDate,
+        session: match.timeSlot,
+        closesAt: deadline.closesAt,
+        closingDisplay: deadline.closingDisplay,
+        status: computedStatus,
+        isFlagged: deadline.isAmbiguous,
+        openedAt: now.toISOString(),
+      };
+      db.insert('polls', newPoll);
+      newPollsCount++;
+      pollsSynced++;
+
+      // Create notification for newly created prediction poll
+      if (computedStatus === 'OPEN') {
+        const notif = createNotification(
+          'POLL_NEW',
+          `New Prediction Poll: ${sportName} ${catName}`,
+          `New prediction poll is available: ${sportName} ${catName} – ${bA.code} vs ${bB.code}, ${deadline.closingDisplay.split(',')[0]}, ${match.timeSlot}. Predictions close at ${deadline.closingDisplay.split(',')[1]?.trim() || deadline.closingDisplay}.`,
+          '/polls',
+          newPoll.id,
+          'poll',
+          `poll-new-${match.id}`
+        );
+        if (notif) notificationsCreated++;
+      }
+    } else {
+      pollsSynced++;
+      const dateChanged = existingPoll.matchDate !== match.scheduledDate;
+      const sessionChanged = existingPoll.session !== match.timeSlot;
+
+      const updates: Partial<Poll> = {
+        title: `${sportName} Prediction: ${bA.code} vs ${bB.code}`,
+        sport: sportName,
+        category: catName,
+        matchDate: match.scheduledDate,
+        session: match.timeSlot,
+        closesAt: deadline.closesAt,
+        closingDisplay: deadline.closingDisplay,
+        isFlagged: deadline.isAmbiguous,
+        status: computedStatus,
+      };
+
+      if (dateChanged || sessionChanged) {
+        db.update('polls', existingPoll.id, updates);
+
+        if (computedStatus === 'OPEN') {
+          const notif = createNotification(
+            'SCHEDULE_CHANGE',
+            `Schedule Update: ${sportName} Prediction Poll`,
+            `${sportName} (${catName}) between ${bA.code} and ${bB.code} is scheduled for ${match.scheduledDate} (${match.timeSlot}). Predictions now close at ${deadline.closingDisplay}.`,
+            '/polls',
+            existingPoll.id,
+            'poll',
+            `poll-resched-${match.id}-${match.scheduledDate}-${match.timeSlot}`
+          );
+          if (notif) notificationsCreated++;
+        }
+      } else if (existingPoll.status !== computedStatus) {
+        db.update('polls', existingPoll.id, { status: computedStatus });
+      }
+    }
+  }
+
+  // 3. Process Dedicated Highlights Sheet if present in Google Spreadsheet
+  const hlSheetName = wb.SheetNames.find((n) => n.toLowerCase().includes('highlight'));
+  if (hlSheetName) {
+    try {
+      const sheet = wb.Sheets[hlSheetName];
+      const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+      for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
+        const hlId = String(row[0] || '').trim();
+        const hlTitle = String(row[4] || row[1] || '').trim();
+        const hlContent = String(row[5] || row[2] || '').trim();
+        const hlMatchId = String(row[1] || '').trim();
+        if (hlTitle && hlContent) {
+          const targetId = hlId || `hl-sheet-${r}`;
+          const existingHl = db.findById('highlights', targetId);
+          if (existingHl) {
+            db.update('highlights', targetId, { title: hlTitle, content: hlContent });
+          } else {
+            db.insert('highlights', {
+              id: targetId,
+              seasonId,
+              title: hlTitle,
+              content: hlContent,
+              matchId: hlMatchId || undefined,
+              isPinned: false,
+              sortOrder: r,
+              publishedAt: now.toISOString(),
+              author: 'ATHLOS Committee',
+            });
+            const notif = createNotification(
+              'HIGHLIGHT_NEW',
+              `Tournament Highlight: ${hlTitle}`,
+              hlContent,
+              '/highlights',
+              targetId,
+              'highlight',
+              `highlight-new-${targetId}`
+            );
+            if (notif) notificationsCreated++;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Dedicated Highlights sheet parsing note:', err);
+    }
+  }
+
+  // 4. Update Highlights from completed matches
+  syncHighlightsFromMatches(seasonId);
+
+  // Ensure all published highlights have notifications
+  const allHighlights = db.query('highlights', (h) => h.seasonId === seasonId);
+  for (const hl of allHighlights) {
+    const notif = createNotification(
+      'HIGHLIGHT_NEW',
+      `Tournament Highlight: ${hl.title}`,
+      hl.content,
+      '/highlights',
+      hl.id,
+      'highlight',
+      `highlight-new-${hl.id}`
+    );
+    if (notif) notificationsCreated++;
+  }
+
+  return {
+    pollsSynced,
+    newPollsCount,
+    highlightsSynced: allHighlights.length,
+    notificationsCreated,
+  };
+}
+
+function createNotification(
+  type: TournamentNotification['type'],
+  title: string,
+  message: string,
+  link: string,
+  entityId: string,
+  entityType: 'poll' | 'highlight' | 'match',
+  dedupKey: string
+): TournamentNotification | null {
+  const existing = db.query('notifications', (n) => n.dedupKey === dedupKey)[0];
+  if (existing) {
+    return null;
+  }
+
+  const notif: TournamentNotification = {
+    id: `notif-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`,
+    type,
+    title,
+    message,
+    link,
+    entityId,
+    entityType,
+    dedupKey,
+    createdAt: new Date().toISOString(),
+  };
+
+  db.insert('notifications', notif);
+  return notif;
 }

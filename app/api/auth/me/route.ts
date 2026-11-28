@@ -13,7 +13,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 
-  const user = db.findById('admin_users', verified.user.userId);
+  await db.syncFromRemote();
+  const user =
+    db.findById('admin_users', verified.user.userId) ||
+    db.getTable('admin_users').find((u) => u.email.toLowerCase() === verified.user!.email.toLowerCase());
+
   if (!user) {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }

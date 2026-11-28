@@ -184,10 +184,30 @@ export interface Poll {
   matchId: string;
   seasonId: string;
   title: string;
+  description?: string;
   status: PollStatus;
   eligibleBatches: string[]; // batch IDs
+  sport?: string;
+  category?: string;
+  matchDate?: string;
+  session?: string;
+  closesAt?: string;
+  closingDisplay?: string;
   openedAt?: string;
   closedAt?: string;
+  isFlagged?: boolean;
+}
+
+export interface TournamentNotification {
+  id: string;
+  type: 'POLL_NEW' | 'POLL_UPDATED' | 'POLL_CLOSING' | 'HIGHLIGHT_NEW' | 'HIGHLIGHT_UPDATED' | 'SCHEDULE_CHANGE';
+  title: string;
+  message: string;
+  link: string;
+  entityId: string;
+  entityType: 'poll' | 'highlight' | 'match';
+  dedupKey: string;
+  createdAt: string;
 }
 
 export interface PollVote {

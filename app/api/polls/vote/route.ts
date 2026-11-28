@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { db } from '@/lib/db';
 import { checkRateLimit } from '@/lib/auth';
+import { isPollClosed } from '@/lib/polls/deadlines';
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,13 +19,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Poll ID and Batch ID are required.' }, { status: 400 });
     }
 
+    await db.syncFromRemote();
     const poll = db.findById('polls', pollId);
     if (!poll) {
       return NextResponse.json({ error: 'Poll not found.' }, { status: 404 });
     }
 
-    if (poll.status !== 'OPEN') {
-      return NextResponse.json({ error: 'This prediction poll is closed.' }, { status: 400 });
+    // Check if the poll deadline has elapsed or match is completed
+    const match = poll.matchId ? db.findById('matches', poll.matchId) : undefined;
+    if (isPollClosed({ ...poll, match })) {
+      if (poll.status !== 'CLOSED') {
+        db.update('polls', poll.id, { status: 'CLOSED', closedAt: new Date().toISOString() });
+        await db.saveToRemote().catch(() => {});
+      }
+      return NextResponse.json(
+        {
+          error: `Prediction deadline has passed. Predictions for this match closed at ${
+            poll.closingDisplay || 'the designated deadline'
+          }.`,
+        },
+        { status: 400 }
+      );
     }
 
     if (!poll.eligibleBatches.includes(batchId)) {
@@ -53,6 +68,8 @@ export async function POST(req: NextRequest) {
       deviceTokenHash,
       createdAt: new Date().toISOString(),
     });
+
+    await db.saveToRemote().catch(() => {});
 
     return NextResponse.json({ success: true, message: 'Vote registered successfully' });
   } catch (err: any) {

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Shield, Trophy, Calendar, BookOpen, Flame, BarChart2, History, Users, Instagram, Menu, X } from 'lucide-react';
+import NotificationCenter from '@/components/NotificationCenter';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home', icon: Shield },
@@ -85,10 +86,16 @@ export default function Navbar() {
                 </Link>
               );
             })}
+
+            {/* In-App Notifications Bell */}
+            <div className="pl-2 border-l border-[#1D5E91]/60">
+              <NotificationCenter />
+            </div>
           </div>
 
-          {/* Mobile Toggle */}
-          <div className="flex md:hidden items-center">
+          {/* Mobile Right Bar: Notifications & Menu Toggle */}
+          <div className="flex md:hidden items-center space-x-2">
+            <NotificationCenter />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-xl bg-[#0B1727] text-slate-300 hover:text-white border border-[#1D5E91]/60"
