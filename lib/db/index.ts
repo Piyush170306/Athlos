@@ -618,6 +618,9 @@ class Database {
   // Repository Methods
   public getTable<K extends keyof DatabaseSchema>(tableName: K): DatabaseSchema[K] {
     const data = this.load();
+    if (!data[tableName] || !Array.isArray(data[tableName])) {
+      (data as any)[tableName] = [];
+    }
     return data[tableName];
   }
 
@@ -777,6 +780,12 @@ class Database {
                 // Preserve authoritative admin credentials across remote sync
                 (parsed as any).admin_users = bundledDb.admin_users;
               }
+
+              // Ensure arrays exist for all schema tables
+              if (!Array.isArray((parsed as any).notifications)) (parsed as any).notifications = [];
+              if (!Array.isArray((parsed as any).polls)) (parsed as any).polls = [];
+              if (!Array.isArray((parsed as any).poll_votes)) (parsed as any).poll_votes = [];
+              if (!Array.isArray((parsed as any).highlights)) (parsed as any).highlights = [];
 
               this.inMemoryData = parsed as DatabaseSchema;
               this.lastRemoteSync = now;
