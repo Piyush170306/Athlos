@@ -5151,7 +5151,11 @@
       ],
       "status": "OPEN",
       "createdAt": "2026-11-27T10:45:19.337Z",
-      "expiresAt": "2026-12-25T23:59:59.000Z"
+      "expiresAt": "2026-12-25T23:59:59.000Z",
+      "matchDate": "2026-12-01",
+      "session": "Evening",
+      "closesAt": "2026-12-01T12:30:00.000Z",
+      "closingDisplay": "1 Dec 2026, 6:00 PM IST"
     },
     {
       "id": "poll-2026-2",
@@ -5165,7 +5169,11 @@
       ],
       "status": "OPEN",
       "createdAt": "2026-11-27T10:45:19.337Z",
-      "expiresAt": "2026-12-25T23:59:59.000Z"
+      "expiresAt": "2026-12-25T23:59:59.000Z",
+      "matchDate": "2026-12-02",
+      "session": "Evening",
+      "closesAt": "2026-12-02T12:30:00.000Z",
+      "closingDisplay": "2 Dec 2026, 6:00 PM IST"
     },
     {
       "id": "poll-2026-3",
@@ -5179,7 +5187,11 @@
       ],
       "status": "OPEN",
       "createdAt": "2026-11-27T10:45:19.337Z",
-      "expiresAt": "2026-12-25T23:59:59.000Z"
+      "expiresAt": "2026-12-25T23:59:59.000Z",
+      "matchDate": "2026-12-05",
+      "session": "Evening",
+      "closesAt": "2026-12-05T12:30:00.000Z",
+      "closingDisplay": "5 Dec 2026, 6:00 PM IST"
     },
     {
       "id": "poll-2026-4",
@@ -5193,7 +5205,11 @@
       ],
       "status": "OPEN",
       "createdAt": "2026-11-27T10:45:19.338Z",
-      "expiresAt": "2026-12-25T23:59:59.000Z"
+      "expiresAt": "2026-12-25T23:59:59.000Z",
+      "matchDate": "2026-12-01",
+      "session": "Evening",
+      "closesAt": "2026-12-01T12:30:00.000Z",
+      "closingDisplay": "1 Dec 2026, 6:00 PM IST"
     },
     {
       "id": "poll-2026-5",
@@ -5207,7 +5223,11 @@
       ],
       "status": "OPEN",
       "createdAt": "2026-11-27T10:45:19.338Z",
-      "expiresAt": "2026-12-25T23:59:59.000Z"
+      "expiresAt": "2026-12-25T23:59:59.000Z",
+      "matchDate": "2026-12-02",
+      "session": "Evening",
+      "closesAt": "2026-12-02T12:30:00.000Z",
+      "closingDisplay": "2 Dec 2026, 6:00 PM IST"
     },
     {
       "id": "poll-2026-6",
@@ -5221,7 +5241,11 @@
       ],
       "status": "OPEN",
       "createdAt": "2026-11-27T10:45:19.338Z",
-      "expiresAt": "2026-12-25T23:59:59.000Z"
+      "expiresAt": "2026-12-25T23:59:59.000Z",
+      "matchDate": "2026-12-05",
+      "session": "Evening",
+      "closesAt": "2026-12-05T12:30:00.000Z",
+      "closingDisplay": "5 Dec 2026, 6:00 PM IST"
     }
   ],
   "poll_votes": [],

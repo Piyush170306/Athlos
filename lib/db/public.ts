@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import { calculatePollDeadline } from '@/lib/polls/deadlines';
 import { Season, Batch, Sport, Match, OfficialBatchScore, Highlight, Announcement, Poll } from '@/lib/types';
 
 export function getActiveSeason(): Season {
@@ -124,14 +125,17 @@ export function getPublicPolls(seasonId: string, options?: { todayOnly?: boolean
 
     const match = matches.find((m) => m.id === poll.matchId);
     const sport = match ? sports.find((s) => s.id === match.sportId) : null;
+    const deadline = calculatePollDeadline(match?.scheduledDate || poll.matchDate, match?.timeSlot || poll.session);
+    const effectiveClosesAt = poll.closesAt || deadline.closesAt;
+    const effectiveClosingDisplay = poll.closingDisplay || deadline.closingDisplay;
 
     // Check deadline closure
     let isClosed = poll.status === 'CLOSED';
     if (!isClosed && match && (match.status === 'COMPLETED' || match.status === 'CANCELLED')) {
       isClosed = true;
     }
-    if (!isClosed && poll.closesAt) {
-      if (now >= new Date(poll.closesAt)) {
+    if (!isClosed && effectiveClosesAt) {
+      if (now >= new Date(effectiveClosesAt)) {
         isClosed = true;
       }
     }
@@ -150,6 +154,8 @@ export function getPublicPolls(seasonId: string, options?: { todayOnly?: boolean
 
     return {
       ...poll,
+      closesAt: effectiveClosesAt,
+      closingDisplay: effectiveClosingDisplay,
       status: (isClosed ? 'CLOSED' : 'OPEN') as 'OPEN' | 'CLOSED',
       match,
       sport,

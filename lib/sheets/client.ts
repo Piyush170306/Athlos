@@ -557,8 +557,9 @@ function syncTournamentEntities(
       }
     } else {
       pollsSynced++;
-      const dateChanged = existingPoll.matchDate !== match.scheduledDate;
-      const sessionChanged = existingPoll.session !== match.timeSlot;
+      const hasPriorSchedule = Boolean(existingPoll.matchDate && existingPoll.session);
+      const dateChanged = hasPriorSchedule && existingPoll.matchDate !== match.scheduledDate;
+      const sessionChanged = hasPriorSchedule && existingPoll.session !== match.timeSlot;
 
       const updates: Partial<Poll> = {
         title: `${sportName} Prediction: ${bA.code} vs ${bB.code}`,
@@ -572,9 +573,9 @@ function syncTournamentEntities(
         status: computedStatus,
       };
 
-      if (dateChanged || sessionChanged) {
-        db.update('polls', existingPoll.id, updates);
+      db.update('polls', existingPoll.id, updates);
 
+      if (dateChanged || sessionChanged) {
         if (computedStatus === 'OPEN') {
           const notif = createNotification(
             'SCHEDULE_CHANGE',
@@ -587,8 +588,6 @@ function syncTournamentEntities(
           );
           if (notif) notificationsCreated++;
         }
-      } else if (existingPoll.status !== computedStatus) {
-        db.update('polls', existingPoll.id, { status: computedStatus });
       }
     }
   }
